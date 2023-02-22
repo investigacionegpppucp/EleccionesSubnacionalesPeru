@@ -397,5 +397,3 @@ tm_shape(geoprov22) +
 rm(list=ls())
 ```
 
-
-
