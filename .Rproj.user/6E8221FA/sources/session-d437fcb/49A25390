@@ -1,26 +1,26 @@
 {
-    "id": "6D9238D6",
+    "id": "49A25390",
     "path": "~/Documentos/20Proyectos EG-PUCP/EleccionaSubnacionales/EleccionesSubnacionalesPeru/_bookdown.yml",
     "project_path": "_bookdown.yml",
     "type": "yaml",
-    "hash": "868655881",
+    "hash": "0",
     "contents": "",
     "dirty": false,
-    "created": 1677088954862.0,
+    "created": 1677089731808.0,
     "source_on_save": false,
-    "relative_order": 4,
+    "relative_order": 6,
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "7,21",
+        "cursorPosition": "3,25",
         "scrollLine": "0"
     },
     "folds": "",
-    "lastKnownWriteTime": 1677088978,
+    "lastKnownWriteTime": 1677089713,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1677088978926,
+    "last_content_update": 1677089713,
     "read_only": false,
     "read_only_alternatives": []
 }

@@ -6,7 +6,7 @@ bookdown::gitbook:
         <li><a href="./">Fact checking de las Elecciones Subnacionales en Perú</a></li>
       after: |
         <li><a href="https://gobierno.pucp.edu.pe" target="blank">Publicado por la Escuela de Gobierno y Políticas Públicas-PUCP</a></li>
-    edit: https://github.com/USERNAME/REPO/edit/BRANCH/%s
+    edit: https://github.com/investigacionegpppucp/EleccionesSubnacionalesPeru/edit/BRANCH/%s
     download: ["pdf", "epub"]
 bookdown::pdf_book:
   includes:
