@@ -1,0 +1,4 @@
+"0","library(car)"
+"0","reg$Eleccion<-recode(reg$Eleccion, ""'Regional 2002'='2002'; 'Regional 2006'='2006'; 'Regional 2010'='2010'; 'Regional 2014'='2014'; 'Regional 2018'='2018';'Regional 2022'='2022'"")"
+"0","prov$Eleccion<-recode(prov$Eleccion, ""'Provincial 2002'='2002'; 'Provincial 2006'='2006'; 'Provincial 2010'='2010'; 'Provincial 2014'='2014'; 'Provincial 2018'='2018';'Provincial 2022'='2022'"")"
+"0","dist$Eleccion<-recode(dist$Eleccion, ""'Distrital 2002'='2002'; 'Distrital 2006'='2006'; 'Distrital 2010'='2010'; 'Distrital 2014'='2014'; 'Distrital 2018'='2018';'Distrital 2022'='2022'"")"

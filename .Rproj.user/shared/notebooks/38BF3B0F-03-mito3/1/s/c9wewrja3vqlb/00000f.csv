@@ -1,0 +1,2 @@
+"0","regional_mito3_mapa$UBIGEO=ifelse(0<regional_mito3_mapa$UBIGEO&regional_mito3_mapa$UBIGEO<10,paste(0,regional_mito3_mapa$UBIGEO, sep = """"), regional_mito3_mapa$UBIGEO)"
+"0","regional_mito3_mapa$'Número de organizaciones políticas candidatas'=regional_mito3_mapa$total_org_pol"

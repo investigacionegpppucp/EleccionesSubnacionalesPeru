@@ -1,0 +1,2 @@
+"0","regional_mito3_mapa=regional_mito3_mapa %>% "
+"0","  filter(Eleccion==""Regional 2022"")"

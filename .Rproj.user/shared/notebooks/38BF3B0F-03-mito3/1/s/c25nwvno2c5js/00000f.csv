@@ -1,0 +1,7 @@
+"0","library(googlesheets4)"
+"0","regional=read.csv(""https://docs.google.com/spreadsheets/d/e/2PACX-1vRJdUE26KIgGmrUT8DEUzY5f3JsGlK0-eQdoTeWQw2SPrGpA_bI54jpSDnyE-hBBAoIsBRiAJzoghy-/pub?gid=1313822542&single=true&output=csv"",dec=""."")"
+"0","library(dplyr)"
+"0","library(ggplot2)"
+"0","library(rio)"
+"0","library(car)"
+"0","library(ggrepel)"

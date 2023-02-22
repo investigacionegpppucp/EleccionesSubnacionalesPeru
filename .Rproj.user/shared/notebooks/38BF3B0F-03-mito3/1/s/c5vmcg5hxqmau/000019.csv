@@ -1,0 +1,2 @@
+"0","distrital_mito3_mapa=distrital_mito3_mapa%>%"
+"0","  dplyr::filter(Eleccion== ""Distrital 2022"")"

@@ -1,0 +1,8 @@
+"0","regional_mito3_tipo=regional%>%"
+"0","     dplyr::filter(Eleccion==""Regional 2002""|Eleccion==""Regional 2006""|Eleccion==""Regional 2010""|Eleccion==""Regional 2014""|Eleccion==""Regional 2018""|Eleccion==""Regional 2022"")%>%"
+"0","  dplyr::filter(Org_pol!= ""VOTOS EN BLANCO"" & Org_pol!= ""VOTOS NULOS"" & Vuelta == ""Primera"")%>%"
+"0","  dplyr::select(Org_pol,Eleccion,Tipo_OP) %>%"
+"0","  unique%>%"
+"0","  dplyr::group_by(Eleccion, Tipo_OP)%>% "
+"0","  dplyr::summarise(n=n())%>%"
+"0","  mutate(ratio=scales::percent(n/sum(n),accuracy = 0.1))"

@@ -1,0 +1,6 @@
+"0","org_total_graf=org_total %>%"
+"0","  unique() %>% "
+"0","  group_by(Eleccion,Tipo_OP) %>% "
+"0","  summarise(n=n())%>%"
+"0","  mutate(ratio=scales::percent(n/sum(n), accuracy = 0.1)) %>% "
+"0","  mutate(n_por=n/sum(n))"

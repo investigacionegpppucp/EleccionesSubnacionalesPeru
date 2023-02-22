@@ -1,0 +1,1 @@
+"0","distrital_mito1$'% de participación electoral'=round(distrital_mito1$V_emitidos/distrital_mito1$Electores*100,1)"
