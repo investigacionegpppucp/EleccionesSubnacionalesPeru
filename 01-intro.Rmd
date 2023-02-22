@@ -367,7 +367,6 @@ provincial_mito1$UBIGEO=ifelse(99<provincial_mito1$UBIGEO&provincial_mito1$UBIGE
 ```
 
 
-
 ```{r include=FALSE}
 library(rgdal)
 mapprov=readOGR("PROVINCIAS.shp") 
@@ -394,7 +393,7 @@ tm_shape(geoprov22) +
   tmap_options(check.and.fix = TRUE)
 ```
 
-```{r, echo=FALSE,warning=FALSE,message=FALSE}
+```{r}
 rm(list=ls())
 ```
 

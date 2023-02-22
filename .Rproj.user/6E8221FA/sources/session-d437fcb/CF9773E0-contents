@@ -306,7 +306,10 @@ scale_color_manual(values =  c("#156c99"))+
 rm(distrital,region_mito2a,region_mito2b,region_mito2c,region_mito2d,region_mito2e)
 ```
 
-## Mapa de la Participación Electoral 2022
+## Mapa a nivel regional
+
+<font size="5"> **Mapa de la Participación Electoral 2022 a nivel regional**</font>
+
 
 ```{r,echo=FALSE,warning=FALSE,message=FALSE}
 part_mapas=distrito_mito3%>%filter(Eleccion==' 2022')
@@ -340,8 +343,9 @@ geo2=merge(per_r,part_mapas, by.x="NAME_1",by.y="nombres", duplicateGeoms = TRUE
       tm_layout(legend.format = list(text.separator = "-"))
 ```
 
-## Mapa de la Participación Electoral 2022 a nivel provincial
+## Mapa a nivel provincial
 
+<font size="5"> **Mapa de la Participación Electoral 2022 a nivel provincial**</font>
 
 ```{r,echo=FALSE,warning=FALSE,message=FALSE}
 provincial=read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQUlZR5ccTPZzM1Uleflp7gomwKqGI3PCo4DijVl42CXoGl2WwVv7HBr0GJffWILL5b0nwkpP2XfPVF/pub?gid=2059395285&single=true&output=csv", dec = ".")
@@ -393,9 +397,15 @@ tm_shape(geoprov22) +
   tmap_options(check.and.fix = TRUE)
 ```
 
+
+## Mapa a nivel distrital
+
+<font size="5"> **Mapa de la Participación Electoral 2022 a nivel distrital**</font>
+
 ```{r}
 rm(list=ls())
 ```
+
 
 
 
