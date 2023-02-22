@@ -1,0 +1,1073 @@
+--- 
+title: "Fact checking de las Elecciones Subnacionales en Perú"
+author: "Área de investigación e incidencia de la Escuela de Gobierno y Políticas
+  Públicas - PUCP"
+date: 'Equipo de trabajo: Jorge Aragón, Marylía Cruz y Paolo Sanchez'
+site: bookdown::bookdown_site
+---
+
+# Presentación
+
+El Área de Incidencia e Investigación de la EGPP- PUCP presenta "Mitos y verdades de las Elecciones Subnacionales en el Perú", la cual tiene como objetivo presentar a detalle los principales mitos sobre los últimos seis procesos electorales subnacionales. 
+
+- Elecciones Regionales y Municipales 2002
+
+- Elecciones Regionales y Municipales 2006
+
+- Elecciones Regionales y Municipales 2010
+
+- Elecciones Regionales y Municipales 2014
+
+- Elecciones Regionales y Municipales 2018
+
+- Elecciones Regionales y Municipales 2022
+
+<!--chapter:end:index.Rmd-->
+
+# Participación Electoral
+
+<font size="6"> **El porcentaje de participación electoral ha disminuído ¿Verdadero o Falso?.**</font>
+
+Se observa que la participación electoral ha disminuído a partir de las Elecciones Regionales y Municipales del 2010. En el 2022, se registró el porcentaje más bajo de participación electoral. 
+
+
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+#library(googlesheets4)
+#regional=read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRJdUE26KIgGmrUT8DEUzY5f3JsGlK0-eQdoTeWQw2SPrGpA_bI54jpSDnyE-hBBAoIsBRiAJzoghy-/pub?gid=2080689295&single=true&output=csv")
+
+
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+#library(dplyr)
+#library(tidyverse)
+#library(car)
+#regional_mito1 =regional%>% filter(Vuelta=="Primera")%>%
+  #filter(Eleccion=="Regional 2002"|Eleccion=="Regional 2006"|Eleccion=="Regional 2010"|Eleccion=="Regional 2014"|Eleccion=="Regional 2018"|Eleccion=="Regional 2022")%>%
+  #select(Region,V_emitidos,V_validos,Electores,Eleccion)%>%
+  #unique()
+
+#regional_mito1$Eleccion<-recode(regional_mito1$Eleccion, "'Regional 2002'='2002'; 'Regional 2006'='2006'; 'Regional 2010'='2010'; 'Regional 2014'='2014'; 'Regional 2018'='2018';'Regional 2022'='2022'")
+#regional_mito1$Eleccion=as.factor(regional_mito1$Eleccion)
+
+
+```
+
+
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+
+#regional_mito1 %>%
+  #select(Region,V_emitidos,V_validos,Electores,Eleccion)%>%
+  #group_by(Eleccion) %>%
+  #summarise(across(c(Electores, V_emitidos,V_validos),sum))%>%
+  #mutate(Participacion=(V_emitidos/Electores)*100)%>%
+#ggplot(aes(x=Eleccion, y=Participacion, group=1)) +
+  #geom_line(colour = "#e55555")+
+  #geom_point()+
+  #ggtitle("Porcentaje de Participación en Elecciones Regionales")+
+  #xlab("Proceso Electoral")+
+  #ylab("Porcentaje de Participación")+theme_minimal()+ylim(70,100)+
+  #geom_text(aes(label=paste0(round(Participacion,0),"%"),vjust=-.9))
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+
+#regional_mito1 =regional_mito1%>% 
+  #mutate(Participacion=(V_emitidos/Electores)*100)
+```
+
+
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+
+#cities = unique(regional_mito1$Region)
+#city_plots = list()
+#for(Region_ in cities) {
+  #city_plots[[Region_]] =ggplot(regional_mito1 %>% filter(Region == Region_), aes(x = Eleccion, y = Participacion, group=1)) + geom_line(colour="#122c74")+ 
+  #geom_point()+ theme(axis.text = element_text(size=10))+ ggtitle(Region_)+
+  #theme(legend.position = "none")+
+  #xlab("Elección")+ 
+  #ylab("Porcentaje de Participación")+theme_minimal()+theme()+ylim(65,100)+
+    #geom_text(aes(label=paste0(round(Participacion,0),"%"),vjust=-.9))
+  #print(city_plots[[Region_]])}
+```
+
+
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+
+#provincial_mito1 %>%
+  #select(Region,V_emitidos,V_validos,Electores,Eleccion)%>%
+  #group_by(Eleccion) %>%
+  #summarise(across(c(Electores, V_emitidos,V_validos),sum))%>%
+  #mutate(Participacion=(V_emitidos/Electores)*100)%>%
+#ggplot(aes(x=Eleccion, y=Participacion, group=1)) +
+  #geom_line(colour = "#e55555")+
+  #geom_point()+
+  #ggtitle("Porcentaje de Participación en Elecciones Provinciales")+
+  #xlab("Proceso Electoral")+
+  #ylab("Porcentaje de Participación")+theme_minimal()+ylim(70,100)+
+  #geom_text(aes(label=paste0(round(Participacion,0),"%"),vjust=-.9))
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+library(googlesheets4)
+distrital=read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQMLHdXuz-ykbp9VmJJGhtl0vdNeeMxjgod2YrYLt9UB3RdX8tb-LEbZr2PVV41Sj384LuK1quysfNj/pub?gid=30541803&single=true&output=csv",dec=".")
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+library(dplyr)
+library(plyr)
+library(tidyverse)
+library(car)
+library(ggplot2)
+library(rio)
+
+distrital_mito1 =distrital%>% 
+  filter(Eleccion=="Distrital 2002"|Eleccion=="Distrital 2006"|Eleccion=="Distrital 2010"|Eleccion=="Distrital 2014"|Eleccion=="Distrital 2018"|Eleccion=="Distrital 2022")%>%
+  dplyr::select(Region,V_emitidos,V_validos,Electores,Eleccion)%>%
+  unique()
+
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+distrital_mito1$Eleccion<-recode(distrital_mito1$Eleccion, "'Distrital 2002'='2002'; 'Distrital 2006'='2006'; 'Distrital 2010'='2010'; 'Distrital 2014'='2014'; 'Distrital 2018'='2018';'Distrital 2022'='2022'")
+distrital_mito1$Eleccion=as.factor(distrital_mito1$Eleccion)
+
+
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+
+distrital_mito1 %>%
+  dplyr::select(Region,V_emitidos,V_validos,Electores,Eleccion)%>%
+  group_by(Eleccion) %>%
+  dplyr::summarise(across(c(Electores, V_emitidos,V_validos),sum))%>%
+  mutate(Participacion=(V_emitidos/Electores)*100)%>%
+ggplot(aes(x=Eleccion, y=Participacion, group=1)) +
+  geom_line(colour = "#e55555")+
+  geom_point()+
+  ggtitle("Porcentaje de Participación en Elecciones Distritales")+
+  xlab("Proceso Electoral")+
+  ylab("Porcentaje de Participación")+theme_minimal()+ylim(70,100)+
+  geom_text(aes(label=paste0(round(Participacion,0),"%"),vjust=-.9))
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+distrito_mito2 =distrital%>% 
+  filter(Eleccion=="Distrital 2002"|Eleccion=="Distrital 2006"|Eleccion=="Distrital 2010"|Eleccion=="Distrital 2014"|Eleccion=="Distrital 2018"|Eleccion=="Distrital 2022")%>%
+  dplyr::select(Region,Provincia,Distrito,Electores,V_emitidos,V_validos,Eleccion)%>%
+  unique()%>%
+  group_by(Region)%>%
+  mutate(V_participacion=V_emitidos/Electores)%>%
+  mutate(grupo= ifelse(Region=="AMAZONAS", "BAJAN", ifelse(Region=="AREQUIPA", "BAJAN", ifelse(Region=="APURIMAC", "BAJAN", ifelse(Region=="CAJAMARCA", "BAJAN", ifelse(Region=="CALLAO", "BAJAN", ifelse(Region=="CUSCO", "BAJAN", ifelse(Region=="LA LIBERTAD", "BAJAN", ifelse( Region=="LIMA", "BAJAN", ifelse(Region=="LORETO", "BAJAN", ifelse(Region=="MADRE DE DIOS", "BAJAN", ifelse(Region=="MOQUEGUA", "BAJAN", ifelse(Region=="PIURA", "BAJAN", ifelse(Region=="SAN MARTIN", "BAJAN", ifelse(Region=="TACNA","BAJAN", ifelse(Region=="PUNO", "BAJAN", "SUBEN")))))))))))))))) %>% 
+    mutate(Macrozona= ifelse(Region=="AMAZONAS"|Region=="LORETO"|Region=="SAN MARTIN"|Region=="UCAYALI", "ORIENTE", ifelse(Region=="APURIMAC"|Region=="AREQUIPA"|Region=="CUSCO"|Region=="MADRE DE DIOS"|Region=="MOQUEGUA"|Region=="PUNO"|Region=="TACNA", "SUR", ifelse(Region=="CAJAMARCA"|Region=="LA LIBERTAD"|Region=="LAMBAYEQUE"|Region=="PIURA"|Region=="TUMBES", "NORTE", ifelse(Region=="CALLAO"|Region=="LIMA", "LIMA METROPOLITANA Y LIMA PROVINCIAS", "CENTRO")))))
+
+
+```
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+distrito_mito2$Region[distrito_mito2$Provincia == 'LIMA'] <- 'LIMA METROPOLITANA'
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+distrito_mito3=distrito_mito2%>% 
+  group_by(Region,Eleccion)%>%
+  summarize_at(c('Electores','V_emitidos','V_validos'),sum)%>%
+mutate(V_participacion=V_emitidos/Electores)%>%
+  mutate(grupo= ifelse(Region=="AMAZONAS", "BAJAN", ifelse(Region=="AREQUIPA", "BAJAN", ifelse(Region=="APURIMAC", "BAJAN", ifelse(Region=="CAJAMARCA", "BAJAN", ifelse(Region=="CALLAO", "BAJAN", ifelse(Region=="CUSCO", "BAJAN", ifelse(Region=="LA LIBERTAD", "BAJAN", ifelse( Region=="LIMA", "BAJAN", ifelse(Region=="LORETO", "BAJAN", ifelse(Region=="MADRE DE DIOS", "BAJAN", ifelse(Region=="MOQUEGUA", "BAJAN", ifelse(Region=="PIURA", "BAJAN", ifelse(Region=="SAN MARTIN", "BAJAN", ifelse(Region=="TACNA","BAJAN", ifelse(Region=="PUNO", "BAJAN", "SUBEN")))))))))))))))) %>% 
+    mutate(Macrozona= ifelse(Region=="AMAZONAS"|Region=="LORETO"|Region=="SAN MARTIN"|Region=="UCAYALI", "ORIENTE", ifelse(Region=="APURIMAC"|Region=="AREQUIPA"|Region=="CUSCO"|Region=="MADRE DE DIOS"|Region=="MOQUEGUA"|Region=="PUNO"|Region=="TACNA", "SUR", ifelse(Region=="CAJAMARCA"|Region=="LA LIBERTAD"|Region=="LAMBAYEQUE"|Region=="PIURA"|Region=="TUMBES", "NORTE", ifelse(Region=="CALLAO"|Region=="LIMA"|Region=="LIMA METROPOLITANA", "LIMA METROPOLITANA Y LIMA PROVINCIAS", "CENTRO")))))
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+distrito_mito3$Eleccion= as.factor(str_sub(distrito_mito3$Eleccion,10,15))
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+region_mito2a=distrito_mito3 %>%
+ filter(Macrozona=="CENTRO")
+
+region_mito2b=distrito_mito3 %>%
+ filter(Macrozona=="LIMA METROPOLITANA Y LIMA PROVINCIAS")
+
+region_mito2c=distrito_mito3 %>%
+ filter(Macrozona=="NORTE")
+
+region_mito2d=distrito_mito3 %>%
+ filter(Macrozona=="ORIENTE")
+
+region_mito2e=distrito_mito3 %>%
+ filter(Macrozona=="SUR")
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = region_mito2a, aes(x = Eleccion, y = V_participacion, group = Region)) + 
+  geom_line(aes(color = grupo), show.legend = FALSE) + 
+  geom_point(size = 0.5, shape = 21)+
+  facet_wrap(~Region, ncol = 3)+
+  xlab("Elección")+ 
+  ylab("Porcentaje")+theme_minimal()+
+scale_color_manual(values =  c("#156c99"))+
+  theme(axis.text = element_text(size=7))+
+  ggtitle("Porcentaje de Participación Electoral por región \nMacrozona Centro")+
+  theme(legend.text = element_text(colour="black", size=6)) + 
+  theme(legend.title = element_text(color = "black", size = 7))+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1), limit = c(0.6,1))+
+  geom_text(aes(label=paste0(round(V_participacion*100,1),"%"),vjust=-.9),size=1.8)+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = region_mito2c, aes(x = Eleccion, y = V_participacion, group = Region)) + 
+  geom_line(aes(), show.legend = FALSE) + 
+  geom_point(size = 0.5, shape = 21)+
+  facet_wrap(~Region, ncol = 3)+
+  xlab("Elección")+ 
+  ylab("Porcentaje")+theme_minimal()+
+scale_color_manual(values =  c("#156c99"))+
+  theme(axis.text = element_text(size=7))+
+  ggtitle("Porcentaje de Participación Electoral por región \nMacrozona Norte")+
+  theme(legend.text = element_text(colour="black", size=6)) + 
+  theme(legend.title = element_text(color = "black", size = 7))+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1), limit = c(0.6,1))+
+  geom_text(aes(label=paste0(round(V_participacion*100,1),"%"),vjust=-.9),size=1.8)+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = region_mito2b, aes(x = Eleccion, y = V_participacion, group = Region)) + 
+  geom_line(aes(), show.legend = FALSE) + 
+  geom_point(size = 0.5, shape = 21)+
+  facet_wrap(~Region, ncol = 3)+
+  xlab("Elección")+ 
+  ylab("Porcentaje")+theme_minimal()+
+scale_color_manual(values =  c("#156c99"))+
+  theme(axis.text = element_text(size=7))+
+  ggtitle("Porcentaje de Participación Electoral por región \nMacrozona Lima Metropolitana y Lima Provincias")+
+  theme(legend.text = element_text(colour="black", size=6)) + 
+  theme(legend.title = element_text(color = "black", size = 7))+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1), limit = c(0.6,1))+
+  geom_text(aes(label=paste0(round(V_participacion*100,1),"%"),vjust=-.9),size=1.8)+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = region_mito2d, aes(x = Eleccion, y = V_participacion, group = Region)) + 
+  geom_line(aes(), show.legend = FALSE) + 
+  geom_point(size = 0.5, shape = 21)+
+  facet_wrap(~Region, ncol = 3)+
+  xlab("Elección")+ 
+  ylab("Porcentaje")+theme_minimal()+
+scale_color_manual(values =  c("#156c99"))+
+  theme(axis.text = element_text(size=7))+
+  ggtitle("Porcentaje de Participación Electoral por región \nMacrozona Oriente")+
+  theme(legend.text = element_text(colour="black", size=6)) + 
+  theme(legend.title = element_text(color = "black", size = 7))+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1), limit = c(0.6,1))+
+  geom_text(aes(label=paste0(round(V_participacion*100,1),"%"),vjust=-.9),size=1.8)+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = region_mito2e, aes(x = Eleccion, y = V_participacion, group = Region)) + 
+  geom_line(aes(), show.legend = FALSE) + 
+  geom_point(size = 0.5, shape = 21)+
+  facet_wrap(~Region, ncol = 3)+
+  xlab("Elección")+ 
+  ylab("Porcentaje")+theme_minimal()+
+scale_color_manual(values =  c("#156c99"))+
+  theme(axis.text = element_text(size=7))+
+  ggtitle("Porcentaje de Participación Electoral por región \nMacrozona Sur")+
+  theme(legend.text = element_text(colour="black", size=6)) + 
+  theme(legend.title = element_text(color = "black", size = 7))+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1), limit = c(0.6,1))+
+  geom_text(aes(label=paste0(round(V_participacion*100,1),"%"),vjust=-.9),size=1.8)+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+distrito_mito2_1=distrito_mito3%>%
+  group_by(Macrozona,Eleccion)%>%
+  summarize_at(c('Electores','V_emitidos','V_validos'),sum)%>%
+mutate(V_participacion=V_emitidos/Electores)
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+distrito_mito2_1$Macrozona[distrito_mito2_1$Macrozona == 'LIMA METROPOLITANA Y LIMA PROVINCIAS'] <- 'LIMA Y CALLAO'
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = distrito_mito2_1, aes(x = Eleccion, y = V_participacion, group = Macrozona)) + 
+  geom_line(aes(), show.legend = FALSE) + 
+  geom_point(size = 0.5, shape = 21)+
+  facet_wrap(~Macrozona, ncol = 3)+
+  xlab("Elección")+ 
+  ylab("Porcentaje")+theme_minimal()+
+scale_color_manual(values =  c("#156c99"))+
+  theme(axis.text = element_text(size=7))+
+  ggtitle("Porcentaje de Participación Electoral por región \nMacrozonas")+
+  theme(legend.text = element_text(colour="black", size=6)) + 
+  theme(legend.title = element_text(color = "black", size = 7))+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1), limit = c(0.6,1))+
+  geom_text(aes(label=paste0(round(V_participacion*100,1),"%"),vjust=-.9),size=1.8)+
+  theme(plot.title = element_text(hjust = 0.5))
+```
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+rm(distrital,region_mito2a,region_mito2b,region_mito2c,region_mito2d,region_mito2e)
+```
+
+## Mapa de la Participación Electoral 2022
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+part_mapas=distrito_mito3%>%filter(Eleccion==' 2022')
+part_mapas$nombres=c("Amazonas","Ancash","Apurímac","Arequipa","Ayacucho","Cajamarca","Callao","Cusco","Huancavelica","Huánuco","Ica","Junín","La Libertad","Lambayeque","Lima","Lima Province","Loreto","Madre de Dios","Moquegua","Pasco","Piura","Puno","San Martín","Tacna","Tumbes","Ucayali")
+part_mapas$V_participacion=round(part_mapas$V_participacion*100,1)
+part_mapas=part_mapas%>%dplyr::rename(c('% de participación electoral'="V_participacion"))
+```
+
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+library(raster)
+per_r=getData("GADM", country= "PER", level=1)
+
+geo2=merge(per_r,part_mapas, by.x="NAME_1",by.y="nombres", duplicateGeoms = TRUE)
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ library(tmap)
+ tmap_mode("view")
+ tm_shape(geo2) +
+   tm_polygons(
+     id="Region",
+     col = "% de participación electoral" ,
+     breaks = c(0,60.1,65.1,70.1,75.1,80.1,85.1,Inf),
+     pal = "BuPu" ,
+     title = "Porcentaje de Participación Electoral",
+     labels=c("0-60%","60-65%","65-70%","70-75","75-80","80-85","Más de 85")
+     ) +
+   tm_view(view.legend.position = c("left","bottom"))+
+      tm_layout(legend.format = list(text.separator = "-"))
+```
+
+## Mapa de la Participación Electoral 2022 a nivel provincial
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+provincial=read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQUlZR5ccTPZzM1Uleflp7gomwKqGI3PCo4DijVl42CXoGl2WwVv7HBr0GJffWILL5b0nwkpP2XfPVF/pub?gid=2059395285&single=true&output=csv", dec = ".")
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+library(dplyr)
+library(tidyverse)
+library(car)
+provincial_mito1 =provincial%>% 
+  filter(Eleccion=="Provincial 2022")%>%
+  dplyr::select(Region,Provincia,UBIGEO,V_emitidos,V_validos,Electores,Eleccion)%>%
+  unique()
+
+provincial_mito1$Eleccion=as.factor(provincial_mito1$Eleccion)
+provincial_mito1$'% de participación electoral'=round(provincial_mito1$V_emitidos/provincial_mito1$Electores*100,1)
+
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+provincial_mito1$UBIGEO=ifelse(99<provincial_mito1$UBIGEO&provincial_mito1$UBIGEO<1000,paste(0,provincial_mito1$UBIGEO, sep = ""), provincial_mito1$UBIGEO)
+
+```
+
+
+
+```{r include=FALSE}
+library(rgdal)
+mapprov=readOGR("PROVINCIAS.shp") 
+geoprov22=merge(mapprov,provincial_mito1,by.x="IDPROV",by.y="UBIGEO", all.x=T)
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+rm(provincial,provincial_mito1)
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+tmap_mode("view")
+tm_shape(geoprov22) +
+  tm_polygons(
+    id="Provincia",
+    col = "% de participación electoral",
+    breaks = c(0,60.1,65.1,70.1,75.1,80.1,85.1,Inf),
+    pal = "BuPu" ,
+    title = "Porcentaje de Participación Electoral",
+    labels=c("0-60%","60-65%","65-70%","70-75","75-80","80-85","Más de 85")
+    ) +
+  #tm_facets(by = "Eleccion", ncol = 1) +
+  tm_view(view.legend.position = c("left","bottom"))+
+  tmap_options(check.and.fix = TRUE)
+```
+
+```{r}
+rm(list=ls())
+```
+
+
+
+
+<!--chapter:end:01-intro.Rmd-->
+
+# Mito 2: El voto no válido 
+
+<font size="6"> **El porcentaje del voto de protesta ha aumentado ¿verdadero o falso?**</font>
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+library(dplyr)
+library(ggplot2)
+library(rio)
+regional=read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRJdUE26KIgGmrUT8DEUzY5f3JsGlK0-eQdoTeWQw2SPrGpA_bI54jpSDnyE-hBBAoIsBRiAJzoghy-/pub?gid=2080689295&single=true&output=csv", dec = ".")
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+library(stringr)
+library(dplyr)
+reg_mito2=regional %>%
+   filter(Vuelta=="Primera")%>%
+  filter(Eleccion=="Regional 2002"|Eleccion=="Regional 2006"|Eleccion=="Regional 2010"|Eleccion=="Regional 2014"|Eleccion=="Regional 2018"|Eleccion=="Regional 2022")%>%
+  select(Region,V_emitidos,V_validos,Eleccion)%>%
+  unique()%>%
+  group_by(Eleccion)%>%
+  summarise(V_emitidos_t=sum(V_emitidos),
+            V_validos_t=sum(V_validos))%>%
+  mutate(V_novalidos=V_emitidos_t-V_validos_t) %>%
+  mutate(V_novalidos_p=(V_novalidos/V_emitidos_t))%>%
+  mutate(Tipo="Regional")
+reg_mito2$Eleccion= as.factor(str_sub(reg_mito2$Eleccion,10,13))
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+provincial=read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQUlZR5ccTPZzM1Uleflp7gomwKqGI3PCo4DijVl42CXoGl2WwVv7HBr0GJffWILL5b0nwkpP2XfPVF/pub?gid=2059395285&single=true&output=csv", dec = ".")
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+prov_mito2 =provincial%>% 
+  select(Provincia,V_emitidos,V_validos,Eleccion)%>%
+  unique()%>%
+  group_by(Eleccion)%>%
+  summarise(V_emitidos_t=sum(V_emitidos), V_validos_t=sum(V_validos))%>%
+  mutate(V_novalidos=V_emitidos_t-V_validos_t)%>%
+  mutate(V_novalidos_p=(V_novalidos/V_emitidos_t)) %>% 
+  mutate(Tipo="Provincial")
+prov_mito2$Eleccion= as.factor(str_sub(prov_mito2$Eleccion,12,15))
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+distrital=read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQMLHdXuz-ykbp9VmJJGhtl0vdNeeMxjgod2YrYLt9UB3RdX8tb-LEbZr2PVV41Sj384LuK1quysfNj/pub?gid=30541803&single=true&output=csv",dec=".")
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+dist_mito2=distrital%>% 
+  select(Region,Provincia,Distrito,V_emitidos,V_validos,Eleccion)%>%
+  unique()%>%
+  group_by(Eleccion)%>%
+  summarise(V_emitidos_t=sum(V_emitidos), V_validos_t=sum(V_validos))%>%
+  mutate(V_novalidos=V_emitidos_t-V_validos_t)%>%
+  mutate(V_novalidos_p=V_novalidos/V_emitidos_t) %>% 
+  mutate(Tipo="Distrital")
+dist_mito2$Eleccion= as.factor(str_sub(dist_mito2$Eleccion,11,14))
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+mito2=rbind(reg_mito2, prov_mito2, dist_mito2) 
+```
+
+```{r,  echo=FALSE,warning=FALSE,message=FALSE}
+library(ggrepel)
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(mito2, aes(x=Eleccion, y=V_novalidos_p, group=Tipo, color = Tipo))+
+  geom_line()+
+  geom_point()+
+  geom_text_repel(aes(label=paste0(round(V_novalidos_p*100,1),"%"),vjust=-.9), colour="black")+
+  ggtitle("Porcentaje de Votos no válidos \nen Elecciones Regionales y Municipales (2002-2022)", subtitle = "Votos no válidos = votos en blanco + votos nulos")+
+  xlab("Proceso Electoral")+
+  ylab("Porcentaje de Votos no válidos")+
+  scale_color_manual(values = c("#C18B3D", "#E55555", "#156C99"), labels = c("Elección Distrital", "Elección Provincial", "Elección Regional"))+
+  labs(color = "")+
+  theme_minimal()+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1),limit=c(0.05,0.25))+
+  theme(plot.title = element_text(hjust = 0.5),plot.subtitle = element_text(hjust = 0.5))+
+  theme(legend.position = "top")+
+  theme(legend.text = element_text(colour="black", size=9))
+
+#ggsave("2_general.png")
+```
+
+## Elecciones Regionales
+
+**Voto no válido en Elecciones Regionales**
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(reg_mito2, aes(x=Eleccion, y=V_novalidos_p, group=1)) +
+  geom_line(colour = "#156C99")+
+  geom_point(colour = "#156C99")+
+  xlab("Proceso Electoral")+
+  ylab("Porcentaje de Votos no válidos")+ 
+  ggtitle("Porcentaje de Votos no válidos en Elecciones Regionales", subtitle = "Votos no válidos = votos en blanco + votos nulos")+  theme_minimal() + 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1), limit = c(0,0.25))+
+  geom_text(aes(label=paste0(round(V_novalidos_p*100,1),"%"),vjust=-.9))+
+  theme(plot.title = element_text(hjust = 0.5),plot.subtitle = element_text(hjust = 0.5)) 
+
+#ggsave("2_regional.png")
+```
+
+**Porcentaje de Voto no válido según región**
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+region_mito2 =regional%>% 
+  filter(Vuelta=="Primera")%>%
+  filter(Eleccion=="Regional 2002"|Eleccion=="Regional 2006"|Eleccion=="Regional 2010"|Eleccion=="Regional 2014"|Eleccion=="Regional 2018"|Eleccion=="Regional 2022")%>%
+  select(Region,V_emitidos,V_validos,Eleccion)%>%
+  unique()%>%
+  mutate(V_novalidos=V_emitidos-V_validos)%>%
+  mutate(V_novalidos_p=(V_novalidos/V_emitidos)) %>%
+  mutate(grupo= ifelse(Region=="AMAZONAS", "BAJAN", ifelse(Region=="AREQUIPA", "BAJAN", ifelse(Region=="APURIMAC", "BAJAN", ifelse(Region=="CAJAMARCA", "BAJAN", ifelse(Region=="CALLAO", "BAJAN", ifelse(Region=="CUSCO", "BAJAN", ifelse(Region=="LA LIBERTAD", "BAJAN", ifelse( Region=="LIMA", "BAJAN", ifelse(Region=="LORETO", "BAJAN", ifelse(Region=="MADRE DE DIOS", "BAJAN", ifelse(Region=="MOQUEGUA", "BAJAN", ifelse(Region=="PIURA", "BAJAN", ifelse(Region=="SAN MARTIN", "BAJAN", ifelse(Region=="TACNA","BAJAN", ifelse(Region=="PUNO", "BAJAN", "SUBEN")))))))))))))))) %>% 
+    mutate(Macrozona= ifelse(Region=="AMAZONAS"|Region=="LORETO"|Region=="SAN MARTIN"|Region=="UCAYALI", "ORIENTE", ifelse(Region=="APURIMAC"|Region=="AREQUIPA"|Region=="CUSCO"|Region=="MADRE DE DIOS"|Region=="MOQUEGUA"|Region=="PUNO"|Region=="TACNA", "SUR", ifelse(Region=="CAJAMARCA"|Region=="LA LIBERTAD"|Region=="LAMBAYEQUE"|Region=="PIURA"|Region=="TUMBES", "NORTE", ifelse(Region=="CALLAO"|Region=="LIMA", "LIMA Y CALLAO", "CENTRO")))))
+
+region_mito2$Eleccion= as.factor(str_sub(region_mito2$Eleccion,10,13))
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+region_mito2a=region_mito2 %>%
+ filter(Macrozona=="CENTRO")
+
+region_mito2b=region_mito2 %>%
+ filter(Macrozona=="LIMA Y CALLAO")
+
+region_mito2c=region_mito2 %>%
+ filter(Macrozona=="NORTE")
+
+region_mito2d=region_mito2 %>%
+ filter(Macrozona=="ORIENTE")
+
+region_mito2e=region_mito2 %>%
+ filter(Macrozona=="SUR")
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = region_mito2a, aes(x = Eleccion, y = V_novalidos_p, group = Region)) + 
+  geom_line(aes(color = grupo), show.legend = TRUE) + 
+  geom_point(size = 0.5)+
+  facet_wrap(~Region, ncol = 3)+
+  xlab("Elección")+ 
+  ylab("Porcentaje")+theme_minimal()+
+  scale_color_manual(values =  c("#E55555"), labels = c("Ascenso de votos no válidos al 2022"))+
+  labs(color = "")+
+  theme(legend.position = "top")+
+  theme(axis.text = element_text(size=7))+
+  ggtitle("Porcentaje de Votos no válidos en Elecciones Regionales por región \nMacrozona Centro")+
+  theme(legend.text = element_text(colour="black", size=9)) + 
+  theme(legend.title = element_text(color = "black", size = 9))+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1), limit = c(0,0.4))+
+  geom_text(aes(label=paste0(round(V_novalidos_p*100,1),"%"),vjust=-.9),size=2.5)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("2_regionalA.png")
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = region_mito2b, aes(x = Eleccion, y = V_novalidos_p, group = Region)) + 
+  geom_line(aes(color = grupo), show.legend = TRUE) + 
+  geom_point(size = 1)+
+  facet_wrap(~Region, ncol = 2)+
+  xlab("Elección")+ 
+  ylab("Porcentaje")+theme_minimal()+
+  scale_color_manual(values =  c("#156C99"), labels = c("Descenso de votos no válidos al 2022"))+
+  labs(color = "")+
+  theme(legend.position = "top")+
+  theme(axis.text = element_text(size=9))+
+  ggtitle("Porcentaje de Votos no válidos en Elecciones Regionales por región \nMacrozona Lima y Callao")+
+  theme(legend.text = element_text(colour="black", size=9)) + 
+  theme(legend.title = element_text(color = "black", size = 9))+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1), limit = c(0,0.4))+
+  geom_text(aes(label=paste0(round(V_novalidos_p*100,1),"%"),vjust=-.9), size=3)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("2_regionalB.png")
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = region_mito2c, aes(x = Eleccion, y = V_novalidos_p, group = Region)) + 
+  geom_line(aes(color = grupo), show.legend = TRUE) + 
+  geom_point(size = 0.5)+
+  facet_wrap(~Region, ncol = 3)+
+  xlab("Elección")+ 
+  ylab("Porcentaje")+theme_minimal()+
+  scale_color_manual(values =  c("#156C99","#E55555"), labels = c("Descenso de votos no válidos al 2022","Ascenso de votos no válidos al 2022"))+
+  labs(color = "")+
+  theme(legend.position = "top")+
+  theme(axis.text = element_text(size=7))+
+  ggtitle("Porcentaje de Votos no válidos en Elecciones Regionales por región \nMacrozona Norte")+
+  theme(legend.text = element_text(colour="black", size=9)) + 
+  theme(legend.title = element_text(color = "black", size = 7))+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1), limit = c(0,0.4))+
+  geom_text(aes(label=paste0(round(V_novalidos_p*100,1),"%"),vjust=-.9),size=2.5)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("2_regionalC.png")
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = region_mito2d, aes(x = Eleccion, y = V_novalidos_p, group = Region)) + 
+  geom_line(aes(color = grupo), show.legend = TRUE) + 
+  geom_point(size = 0.5)+
+  facet_wrap(~Region, ncol = 2)+
+  xlab("Elección")+ 
+  ylab("Porcentaje")+theme_minimal()+
+  scale_color_manual(values =  c("#156C99","#E55555"), labels = c("Descenso de votos no válidos al 2022","Ascenso de votos no válidos al 2022"))+
+  labs(color = "")+
+  theme(legend.position = "top")+
+  theme(axis.text = element_text(size=7))+
+  ggtitle("Porcentaje de Votos no válidos en Elecciones Regionales por región \nMacrozona Oriente")+
+  theme(legend.text = element_text(colour="black", size=9)) + 
+  theme(legend.title = element_text(color = "black", size = 7))+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1), limit = c(0,0.4))+
+  geom_text(aes(label=paste0(round(V_novalidos_p*100,1),"%"),vjust=-.9),size=2.5)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("2_regionalD.png")
+```
+  
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = region_mito2e, aes(x = Eleccion, y = V_novalidos_p, group = Region)) + 
+  geom_line(aes(color = grupo), show.legend = TRUE) + 
+  geom_point(size = 0.5)+
+  facet_wrap(~Region, ncol = 3)+
+  xlab("Elección")+ 
+  ylab("Porcentaje")+theme_minimal()+
+  scale_color_manual(values =  c("#156C99"), labels = c("Descenso de votos no válidos al 2022"))+
+  labs(color = "")+
+  theme(legend.position = "top")+
+  theme(axis.text = element_text(size=7))+
+  ggtitle("Porcentaje de Votos no válidos en Elecciones Regionales por región \nMacrozona Sur")+
+  theme(legend.text = element_text(colour="black", size=9)) + 
+  theme(legend.title = element_text(color = "black", size = 7))+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1), limit = c(0,0.4))+
+  geom_text(aes(label=paste0(round(V_novalidos_p*100,1),"%"),vjust=-.9),size=2.5)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("2_regionalE.png")
+```
+
+
+**Porcentaje de votos no válidos versus Porcentaje de votos por la organización política ganadora en las Elecciones Regionales**
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+region_mito2_comp=regional%>% 
+  filter(Vuelta=="Primera")%>%
+  filter(Eleccion=="Regional 2002"|Eleccion=="Regional 2006"|Eleccion=="Regional 2010"|Eleccion=="Regional 2014"|Eleccion=="Regional 2018"|Eleccion=="Regional 2022")%>%
+  filter(!(Org_pol %in% c("VOTOS EN BLANCO","VOTOS NULOS")))%>%
+  select(Region,V_emitidos,V_validos,Org_pol, Votos, Eleccion, UBIGEO)%>%
+  group_by(Region,Eleccion, UBIGEO)%>%
+  filter (Votos == max (Votos, na.rm = TRUE))%>%
+  mutate(V_novalidos = V_emitidos-V_validos)%>%
+  mutate(V_novalidos_p=V_novalidos/V_emitidos) %>%
+  mutate(Comparacion = ifelse(Votos>V_novalidos, "1_ORGANIZACION POLITICA", ifelse(Votos<V_novalidos, "2_NO VALIDOS", "3_EMPATE")))
+
+region_mito2_comp$Eleccion= as.factor(str_sub(region_mito2_comp$Eleccion,10,13))
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+region_mito2_compara =region_mito2_comp %>%
+  group_by(Eleccion)%>%
+  count(Comparacion) %>%
+  mutate(ratio=scales::percent(n/sum(n),accuracy = 1))
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(region_mito2_compara, aes(x = Eleccion, y=n, fill = Comparacion)) + 
+  geom_bar(stat="identity",position = "fill")+
+  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold")+
+  ggtitle("Porcentaje de regiones donde el voto no valido supera \nal voto de la organización política ganadora")+
+  xlab("Elección Regional")+ 
+  ylab("Regiones (%)")+
+  scale_fill_manual(values = c("#156C99","#E55555"), labels = c("Organización política","Votos no válidos")) + 
+  labs(fill = "Mayor cantidad de votos obtenidos por")+theme_minimal()+
+  scale_y_continuous(labels = scales::percent)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("2_regional_versus.png")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+#export(region_mito2_comp,"region_mito2_comp.xlsx")
+```
+
+**Mapa Voto no válido en Elecciones Regionales 2022**
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+region_m2=region_mito2_comp %>% 
+  select(Region, Eleccion, UBIGEO, V_novalidos_p, Comparacion) %>% 
+  mutate(V_novalidos_p=round(V_novalidos_p*100,1)) %>% 
+  rename(c('% de votos no válidos'="V_novalidos_p"))
+
+region_m2$UBIGEO=ifelse(region_m2$UBIGEO<10,paste(0,region_m2$UBIGEO, sep = ""), region_m2$UBIGEO)
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+region_m2_2022=region_m2 %>% 
+  filter(Eleccion=="2022")
+```
+
+```{r include=FALSE}
+library(raster)
+per_r=getData("GADM", country= "PER", level=1)
+per_r=subset(per_r, NAME_1!="Lima Province" )
+georeg22=merge(per_r,region_m2_2022,by.x="CC_1",by.y="UBIGEO", duplicateGeoms = TRUE)
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+library(tmap)
+tmap_mode("view")
+tm_shape(georeg22) +
+  tm_polygons(
+    id="Region",
+    col = "% de votos no válidos",
+    breaks = c(14.5, 17, 18.5, 20,21.5,Inf),
+    pal = "Reds" ,
+    title = "Porcentaje de votos no válidos",
+    labels=c("14.5-17%","17-18.5%","18.5-20%","20-21.5%","Más de 21.5%")
+    ) +
+  #tm_facets(by = "Eleccion", ncol = 1) +
+  tm_view(view.legend.position = c("left","bottom"))
+```
+
+```{r}
+rm(region_m2_2022,regional,per_r,region_m2)
+```
+
+
+## Elecciones Provinciales
+
+**Voto no válido en Elecciones Provinciales**
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(prov_mito2, aes(x=Eleccion, y=V_novalidos_p, group=1)) +
+  geom_line(colour = "#E55555")+
+  geom_point(colour = "#E55555")+
+  ggtitle("Porcentaje de Votos no válidos en Elecciones Provinciales",  subtitle = "Votos no válidos = votos en blanco + votos nulos")+
+  xlab("Proceso Electoral")+ 
+  ylab("Porcentaje de Votos no válidos")+theme_minimal()+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1), limit = c(0,0.25))+
+  geom_text(aes(label=paste0(round(V_novalidos_p*100,1),"%"),vjust=-.9))+
+  theme(plot.title = element_text(hjust = 0.5),plot.subtitle = element_text(hjust = 0.5)) 
+
+#ggsave("2_provincial.png")
+```
+
+**Porcentaje de votos no válidos versus Porcentaje de votos por la organización política ganadora en las Elecciones Provinciales**
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+prov_mito2_comp =provincial%>% 
+  dplyr::select(Region,Provincia,V_emitidos,V_validos,Org_pol, Votos, Eleccion, UBIGEO)%>%
+  filter(Org_pol != "VOTOS EN BLANCO" & Org_pol != "VOTOS NULOS")%>%
+  group_by(Region, Provincia,Eleccion)%>%
+  slice (which.max (Votos))%>%   #por si hay empates   filter (Votos == max (Votos, na.rm = TRUE))%>% incluye empate
+  mutate(V_novalidos=V_emitidos-V_validos)%>%
+  mutate(V_novalidos_p=V_novalidos/V_emitidos) %>% 
+  mutate(Comparacion= ifelse(Votos>V_novalidos, "1_ORGANIZACION POLITICA", ifelse(Votos<V_novalidos, "2_NO VALIDOS", "3_EMPATE")))
+
+prov_mito2_comp$Eleccion= as.factor(str_sub(prov_mito2_comp$Eleccion,12,15))
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+prov_mito2_compara =prov_mito2_comp %>%
+  group_by(Eleccion) %>% 
+  count(Comparacion) %>%
+  mutate(ratio=scales::percent(n/sum(n),accuracy = 1))
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(prov_mito2_compara, aes(x = Eleccion, y=n, fill = Comparacion)) + 
+  geom_bar(stat="identity",position = "fill")+
+  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold")+
+  ggtitle("Porcentaje de provincias donde el voto no valido supera \nal voto de la organización política ganadora")+
+  xlab("Elección Provincial")+ 
+  ylab("Regiones (%)")+
+  scale_fill_manual(values = c("#156C99","#E55555"), labels = c("Organización política","Votos no válidos")) + 
+  labs(fill = "Mayor cantidad de votos obtenidos por")+theme_minimal()+
+  scale_y_continuous(labels = scales::percent)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("2_provincial_versus.png")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+#export(prov_mito2_comp,"prov_mito2_comp.xlsx")
+```
+
+**Mapa Voto no válido en Elecciones Provinciales 2022**
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+prov_m2=prov_mito2_comp %>% 
+  dplyr::select(Provincia, Eleccion, UBIGEO, V_novalidos_p, Comparacion) %>% 
+  mutate(V_novalidos_p=round(V_novalidos_p*100,1)) %>% 
+  rename(c('% de votos no válidos'="V_novalidos_p"))
+
+prov_m2$UBIGEO=ifelse(99<prov_m2$UBIGEO&prov_m2$UBIGEO<1000,paste(0,prov_m2$UBIGEO, sep = ""), prov_m2$UBIGEO)
+#prov_m2$ubi_reg=substr(prov$UBIGEO, 1, 2) 
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+prov_m2_2022=prov_m2 %>% 
+  filter(Eleccion=="2022")
+```
+
+```{r include=FALSE}
+library(rgdal)
+mapprov=readOGR("PROVINCIAS.shp") 
+geoprov22=merge(mapprov,prov_m2_2022,by.x="IDPROV",by.y="UBIGEO", all.x=T)
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+tmap_mode("view")
+tm_shape(geoprov22) +
+  tm_polygons(
+    id="Provincia",
+    col = "% de votos no válidos",
+    breaks = c(6,10,14,18,22,Inf),
+    pal = "Reds" ,
+    title = "Porcentaje de votos no válidos",
+    labels=c("6-10%","10-14%","14-18%","18-22%","Más de 22%")
+    ) +
+  #tm_facets(by = "Eleccion", ncol = 1) +
+  tm_view(view.legend.position = c("left","bottom"))+
+  tmap_options(check.and.fix = TRUE)
+```
+
+## Elecciones Distritales
+
+**Voto no válido en Elecciones Distritales**
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(dist_mito2, aes(x=Eleccion, y=V_novalidos_p, group=1)) +
+  geom_line(colour = "#C18B3D")+
+  geom_point(colour = "#C18B3D")+
+  ggtitle("Porcentaje de Votos no válidos en Elecciones Distritales",  subtitle = "Votos no válidos = votos en blanco + votos nulos")+
+  xlab("Proceso Electoral")+ 
+  ylab("Porcentaje de Votos no válidos")+theme_minimal()+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1), limit = c(0,0.25))+
+  geom_text(aes(label=paste0(round(V_novalidos_p*100,1),"%"),vjust=-.9))+
+  theme(plot.title = element_text(hjust = 0.5),plot.subtitle = element_text(hjust = 0.5)) 
+
+#ggsave("2_distrital.png")
+```
+
+**Porcentaje de votos no válidos versus Porcentaje de votos por la organización política ganadora en las Elecciones Distritales**
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+dist_mito2_comp =distrital%>% 
+  dplyr::select(Region,Provincia,Distrito,V_emitidos,V_validos,Org_pol, Votos, Eleccion, UBIGEO)%>%
+  filter(Org_pol != "VOTOS EN BLANCO" & Org_pol != "VOTOS NULOS")%>%
+  group_by(Provincia,Distrito,Eleccion)%>%
+  slice (which.max (Votos))%>%
+  mutate(V_novalidos=V_emitidos-V_validos)%>%
+  mutate(V_novalidos_p=V_novalidos/V_emitidos) %>% 
+  mutate(Comparacion= ifelse(Votos>V_novalidos, "1_ORGANIZACION", ifelse(Votos<V_novalidos, "2_NO VALIDOS", "3_EMPATE")))
+
+dist_mito2_comp$Eleccion= as.factor(str_sub(dist_mito2_comp$Eleccion,11,14))
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+dist_mito2_compara =dist_mito2_comp %>%
+  group_by(Eleccion) %>% 
+  count(Comparacion) %>%
+  mutate(ratio=scales::percent(n/sum(n),accuracy = 0.1))
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(dist_mito2_compara, aes(x = Eleccion, y=n, fill = Comparacion)) + 
+  geom_bar(stat="identity",position = "fill")+
+  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold")+
+  ggtitle("Porcentaje de distritos donde el voto no valido supera \nal voto de la organización política ganadora")+
+  xlab("Elección Distrital")+ 
+  ylab("Distritos (%)")+
+  scale_fill_manual(values = c("#156C99","#E55555","#55BA77"), labels = c("Organización política","Votos no válidos","Empate")) + 
+  labs(fill = "Mayor cantidad de votos obtenidos por")+theme_minimal()+
+  scale_y_continuous(labels = scales::percent)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("2_distrital_versus.png")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+#export(dist_mito2_comp,"dist_mito2_comp.xlsx")
+```
+
+**Mapa Voto no válido en Elecciones Distritales 2022**
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+dist_m2=dist_mito2_comp %>% 
+  dplyr::select(Region,Provincia, Distrito,Eleccion, UBIGEO, V_novalidos_p, Comparacion) %>% 
+  mutate(V_novalidos_p=round(V_novalidos_p*100,1)) %>% 
+  rename(c('% de votos no válidos'="V_novalidos_p"))
+
+dist_m2$UBIGEO=ifelse(10000<dist_m2$UBIGEO&dist_m2$UBIGEO<100000,paste(0,dist_m2$UBIGEO, sep = ""), dist_m2$UBIGEO)
+#dist_m2$ubi_reg=substr(dist_m2$UBIGEO, 1, 2) 
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+dist_m2_2022=dist_m2 %>% 
+  filter(Eleccion=="2022")
+```
+
+```{r include=FALSE}
+mapdist=readOGR("LIMITE_DISTRITAL_2020_INEI.shp") 
+geodist22=merge(mapdist,dist_m2_2022,by.x="UBIGEO",by.y="UBIGEO", duplicateGeoms = TRUE)
+#geodist22=geodist22[complete.cases(geodist22@data$`% de votos no válidos`),] 
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+tmap_mode("view")
+tm_shape(geodist22) +
+  tm_polygons(
+    id="NOMBDIST",
+    col = "% de votos no válidos",
+    breaks = c(0,5,10,15,20,Inf),
+    pal = "Reds" ,
+    colorNA = "white",
+    textNA = "Distrito capital sin elección",
+    title = "Porcentaje de votos no válidos",
+    labels=c("0-5%","5-10%","10-15%","15-20%","Más de 20%")
+    ) +
+  #tm_facets(by = "Eleccion", ncol = 1)+
+  tm_view(view.legend.position = c("left","bottom"))
+```
+
+```{r}
+rm(list=ls())
+```
+
+
+<!--chapter:end:02-mito2.Rmd-->
+
+# Parts
+
+You can add parts to organize one or more book chapters together. Parts can be inserted at the top of an .Rmd file, before the first-level chapter heading in that same file. 
+
+Add a numbered part: `# (PART) Act one {-}` (followed by `# A chapter`)
+
+Add an unnumbered part: `# (PART\*) Act one {-}` (followed by `# A chapter`)
+
+Add an appendix as a special kind of un-numbered part: `# (APPENDIX) Other stuff {-}` (followed by `# A chapter`). Chapters in an appendix are prepended with letters instead of numbers.
+
+
+
+
+<!--chapter:end:03-parts.Rmd-->
+
+# Footnotes and citations 
+
+## Footnotes
+
+Footnotes are put inside the square brackets after a caret `^[]`. Like this one ^[This is a footnote.]. 
+
+## Citations
+
+Reference items in your bibliography file(s) using `@key`.
+
+For example, we are using the **bookdown** package [@R-bookdown] (check out the last code chunk in index.Rmd to see how this citation key was added) in this sample book, which was built on top of R Markdown and **knitr** [@xie2015] (this citation was added manually in an external file book.bib). 
+Note that the `.bib` files need to be listed in the index.Rmd with the YAML `bibliography` key.
+
+
+The RStudio Visual Markdown Editor can also make it easier to insert citations: <https://rstudio.github.io/visual-markdown-editing/#/citations>
+
+<!--chapter:end:04-citations.Rmd-->
+
+# Blocks
+
+## Equations
+
+Here is an equation.
+
+\begin{equation} 
+  f\left(k\right) = \binom{n}{k} p^k\left(1-p\right)^{n-k}
+  (\#eq:binom)
+\end{equation} 
+
+You may refer to using `\@ref(eq:binom)`, like see Equation \@ref(eq:binom).
+
+
+## Theorems and proofs
+
+Labeled theorems can be referenced in text using `\@ref(thm:tri)`, for example, check out this smart theorem \@ref(thm:tri).
+
+::: {.theorem #tri}
+For a right triangle, if $c$ denotes the *length* of the hypotenuse
+and $a$ and $b$ denote the lengths of the **other** two sides, we have
+$$a^2 + b^2 = c^2$$
+:::
+
+Read more here <https://bookdown.org/yihui/bookdown/markdown-extensions-by-bookdown.html>.
+
+## Callout blocks
+
+
+The R Markdown Cookbook provides more help on how to use custom blocks to design your own callouts: https://bookdown.org/yihui/rmarkdown-cookbook/custom-blocks.html
+
+<!--chapter:end:05-blocks.Rmd-->
+
+# Sharing your book
+
+## Publishing
+
+HTML books can be published online, see: https://bookdown.org/yihui/bookdown/publishing.html
+
+## 404 pages
+
+By default, users will be directed to a 404 page if they try to access a webpage that cannot be found. If you'd like to customize your 404 page instead of using the default, you may add either a `_404.Rmd` or `_404.md` file to your project root and use code and/or Markdown syntax.
+
+## Metadata for sharing
+
+Bookdown HTML books will provide HTML metadata for social sharing on platforms like Twitter, Facebook, and LinkedIn, using information you provide in the `index.Rmd` YAML. To setup, set the `url` for your book and the path to your `cover-image` file. Your book's `title` and `description` are also used.
+
+
+
+This `gitbook` uses the same social sharing data across all chapters in your book- all links shared will look the same.
+
+Specify your book's source repository on GitHub using the `edit` key under the configuration options in the `_output.yml` file, which allows users to suggest an edit by linking to a chapter's source file. 
+
+Read more about the features of this output format here:
+
+https://pkgs.rstudio.com/bookdown/reference/gitbook.html
+
+Or use:
+
+```{r eval=FALSE}
+?bookdown::gitbook
+```
+
+
+
+<!--chapter:end:06-share.Rmd-->
+
+`r if (knitr::is_html_output()) '
+# References {-}
+'`
+
+<!--chapter:end:07-references.Rmd-->
+
