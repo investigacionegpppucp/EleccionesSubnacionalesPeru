@@ -316,7 +316,7 @@ tm_shape(georeg22) +
   tm_polygons(
     id="Region",
     col = "% de votos no válidos",
-    breaks = c(14.5, 17, 18.5, 20,21.5,Inf),
+    breaks = c(14.5, 17.1, 18.6, 20.1,21.6,Inf),
     pal = "Reds" ,
     title = "Porcentaje de votos no válidos",
     labels=c("14.5-17%","17-18.5%","18.5-20%","20-21.5%","Más de 21.5%")
@@ -418,7 +418,7 @@ tm_shape(geoprov22) +
   tm_polygons(
     id="Provincia",
     col = "% de votos no válidos",
-    breaks = c(6,10,14,18,22,Inf),
+    breaks = c(6,10.1,14.1,18.1,22.1,Inf),
     pal = "Reds" ,
     title = "Porcentaje de votos no válidos",
     labels=c("6-10%","10-14%","14-18%","18-22%","Más de 22%")
@@ -516,7 +516,7 @@ tm_shape(geodist22) +
   tm_polygons(
     id="NOMBDIST",
     col = "% de votos no válidos",
-    breaks = c(0,5,10,15,20,Inf),
+    breaks = c(0,5.1,10.1,15.1,20.1,Inf),
     pal = "Reds" ,
     colorNA = "white",
     textNA = "Distrito capital sin elección",

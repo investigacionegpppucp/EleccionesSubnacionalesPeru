@@ -1,9 +1,7 @@
----
-title: "Mito 4 - Organizaciones ganadoras"
-author: "Karina Alcantara"
-date: "2022-12-20"
-output: html_document
----
+# 0rganizaciones políticas ganadoras
+
+<font size="6"> **Las organizaciones políticas ganadoras son predominantemente movimientos regionales ¿verdadero o falso?**</font>
+
 
 ```{r setup, echo = FALSE, warning=FALSE}
 knitr::opts_chunk$set(warning = FALSE, echo = FALSE,message = FALSE,fig.align="center", out.width = "120%")

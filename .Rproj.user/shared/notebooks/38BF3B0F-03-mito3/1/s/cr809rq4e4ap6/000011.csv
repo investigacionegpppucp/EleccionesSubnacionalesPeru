@@ -1,2 +1,0 @@
-"0","provincial_mito3_mapa=provincial_mito3_mapa %>% "
-"0","  dplyr::filter(Eleccion==""Provincial 2022"")"
