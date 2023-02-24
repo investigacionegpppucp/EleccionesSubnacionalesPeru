@@ -39,3 +39,8 @@ elecciones-distritales-2
 porcentaje-de-distritos-según-tipo-de-organización-que-ganó-a-nivel-regional
 porcentaje-de-distritos-obtenidos-según-tipo-de-organización-política-electa
 en-cuantos-distritos-ganan-los-partidosqué-porcentaje-de-los-partidos-candidatos-resulta-ganador-en-por-lo-menos-un-distrito
+movimientos-regionales-vs.-partidos-nacionales
+rganizaciones-políticas-ganadoras
+elecciones-regionales-3
+elecciones-provinciales-3
+elecciones-distritales-3

@@ -1,2 +1,1 @@
-"0","provincial_mito3_mapa$UBIGEO=ifelse(0<provincial_mito3_mapa$UBIGEO&provincial_mito3_mapa$UBIGEO<999,paste(0,provincial_mito3_mapa$UBIGEO, sep = """"), provincial_mito3_mapa$UBIGEO)"
-"0","provincial_mito3_mapa$'Número de organizaciones políticas candidatas'=provincial_mito3_mapa$total_org_pol"
+"0","provincial_mito3_mapa_a$UBIGEO=ifelse(0<provincial_mito3_mapa_a$UBIGEO&provincial_mito3_mapa_a$UBIGEO<999,paste(0,provincial_mito3_mapa_a$UBIGEO, sep = """"), provincial_mito3_mapa_a$UBIGEO)"
