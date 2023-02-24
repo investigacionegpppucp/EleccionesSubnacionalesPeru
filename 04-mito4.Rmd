@@ -17,19 +17,35 @@ library(car)
 regional$Tipo_OP<-recode(regional$Tipo_OP, "'PARTIDO POLÃ\u008dTICO'='PARTIDO POLITICO'")
 ```
 
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+provincial=read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQUlZR5ccTPZzM1Uleflp7gomwKqGI3PCo4DijVl42CXoGl2WwVv7HBr0GJffWILL5b0nwkpP2XfPVF/pub?gid=2059395285&single=true&output=csv", dec = ".")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+provincial$Tipo_OP<-recode(provincial$Tipo_OP, "'ORGANIZACIÃ“N LOCAL (PROVINCIAL)'='ORGANIZACION LOCAL PROVINCIAL'; 'PARTIDO POLÃ\u008dTICO'='PARTIDO POLITICO'")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+distrital=read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQMLHdXuz-ykbp9VmJJGhtl0vdNeeMxjgod2YrYLt9UB3RdX8tb-LEbZr2PVV41Sj384LuK1quysfNj/pub?output=csv", dec='.')
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+distrital$Tipo_OP<-recode(distrital$Tipo_OP, "'ORGANIZACIÃ“N LOCAL (PROVINCIAL)'='ORGANIZACION LOCAL PROVINCIAL';'ORGANIZACION LOCAL (DISTRITAL)'='ORGANIZACION LOCAL DISTRITAL'; 'PARTIDO POLÃ\u008dTICO'='PARTIDO POLITICO'")
+```
+
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
 reg=regional%>%
-     filter(Eleccion=="Regional 2002"|Eleccion=="Regional 2006"|Eleccion=="Regional 2010"|Eleccion=="Regional 2014"|Eleccion=="Regional 2018"|Eleccion=="Regional 2022")%>%
-  filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Vuelta == "Primera")%>%
-  select(Org_pol,Eleccion,Tipo_OP)
+     dplyr::filter(Eleccion=="Regional 2002"|Eleccion=="Regional 2006"|Eleccion=="Regional 2010"|Eleccion=="Regional 2014"|Eleccion=="Regional 2018"|Eleccion=="Regional 2022")%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Vuelta == "Primera")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP)
 
 prov=provincial%>%
-  filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
-  select(Org_pol,Eleccion,Tipo_OP) 
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP) 
 
 dist=distrital%>%
-  filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
-  select(Org_pol,Eleccion,Tipo_OP)
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP)
 ```
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
@@ -72,35 +88,21 @@ ggplot(cand_total_graf, aes(x=Eleccion, y=n_por, group=Tipo_OP, color = Tipo_OP)
 #ggsave("5_general.png")
 ```
 
-## Elecciones Regionales
-
-**Número de candidaturas en total**
-
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
-regional_mito5_total=regional%>%
-     filter(Eleccion=="Regional 2002"|Eleccion=="Regional 2006"|Eleccion=="Regional 2010"|Eleccion=="Regional 2014"|Eleccion=="Regional 2018"|Eleccion=="Regional 2022")%>%
-  filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Vuelta == "Primera")%>%
-  select(Org_pol,Eleccion,Tipo_OP) %>%
-  group_by(Eleccion)%>% 
-  summarise(n=n())
+rm(cand_total,cand_total_graf,dist,prov,reg)
 ```
 
-| **Elección**  | **Número de candidaturas** |
-|:-------------:|:--------------------------:|
-| Regional 2002 |            223             |
-| Regional 2006 |            225             |
-| Regional 2010 |            295             |
-| Regional 2014 |            311             |
-| Regional 2018 |            314             |
-| Regional 2022 |            203             |
+## Elecciones Regionales
 
-**Número de candidaturas por tipo**
+
+
+**Número de organizaciones candidatas por tipo**
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
 regional_mito5_tipo=regional%>%
-     filter(Eleccion=="Regional 2002"|Eleccion=="Regional 2006"|Eleccion=="Regional 2010"|Eleccion=="Regional 2014"|Eleccion=="Regional 2018"|Eleccion=="Regional 2022")%>%
-  filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Vuelta == "Primera")%>%
-  select(Org_pol,Eleccion,Tipo_OP) %>%
+    dplyr:: filter(Eleccion=="Regional 2002"|Eleccion=="Regional 2006"|Eleccion=="Regional 2010"|Eleccion=="Regional 2014"|Eleccion=="Regional 2018"|Eleccion=="Regional 2022")%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Vuelta == "Primera")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP) %>%
   group_by(Eleccion, Tipo_OP)%>% 
   summarise(n=n())%>%
   mutate(ratio=scales::percent(n/sum(n),accuracy = 0.1))
@@ -135,9 +137,9 @@ ggplot(regional_mito5_tipo, aes(x = Eleccion, y=n, fill = Tipo_OP)) +
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
 regional_mito5_region=regional%>%
-     filter(Eleccion=="Regional 2002"|Eleccion=="Regional 2006"|Eleccion=="Regional 2010"|Eleccion=="Regional 2014"|Eleccion=="Regional 2018"|Eleccion=="Regional 2022")%>%
-  filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Vuelta == "Primera")%>%
-  select(Region,Org_pol,Tipo_OP,Eleccion,UBIGEO) %>%
+     dplyr::filter(Eleccion=="Regional 2002"|Eleccion=="Regional 2006"|Eleccion=="Regional 2010"|Eleccion=="Regional 2014"|Eleccion=="Regional 2018"|Eleccion=="Regional 2022")%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Vuelta == "Primera")%>%
+  dplyr::select(Region,Org_pol,Tipo_OP,Eleccion,UBIGEO) %>%
   group_by(Region,Eleccion, Tipo_OP,UBIGEO)%>%
   summarise(n=n()) %>%
   group_by(Eleccion, Region)%>%
@@ -148,19 +150,19 @@ regional_mito5_region=regional%>%
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
 regional_mito5_region1=regional_mito5_region %>%
- filter(Macrozona=="CENTRO")
+ dplyr::filter(Macrozona=="CENTRO")
 
 regional_mito5_region2=regional_mito5_region %>%
- filter(Macrozona=="LIMA Y CALLAO")
+ dplyr::filter(Macrozona=="LIMA Y CALLAO")
 
 regional_mito5_region3=regional_mito5_region %>%
- filter(Macrozona=="NORTE")
+ dplyr::filter(Macrozona=="NORTE")
 
 regional_mito5_region4=regional_mito5_region %>%
- filter(Macrozona=="ORIENTE")
+ dplyr::filter(Macrozona=="ORIENTE")
 
 regional_mito5_region5=regional_mito5_region %>%
- filter(Macrozona=="SUR")
+ dplyr::filter(Macrozona=="SUR")
 ```
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
@@ -269,9 +271,9 @@ ggplot(data = regional_mito5_region5, aes(x = Eleccion, y= n, fill = Tipo_OP))+
 library(reshape2)
 regional_mito5_mapa=merge(x=dcast(regional_mito5_region, UBIGEO + Region + Eleccion + total_org_pol ~ Tipo_OP, value.var = "n"), y=dcast(regional_mito5_region, UBIGEO + Region + Eleccion ~ Tipo_OP, value.var = "ratio"), by= c("UBIGEO", "Region", "Eleccion"), all = TRUE)
 regional_mito5_mapa[is.na(regional_mito5_mapa)] = 0
-names(regional_mito5_mapa)[5]="alianza_n"
-names(regional_mito5_mapa)[6]="mov_n"
-names(regional_mito5_mapa)[7]="par_n"
+names(regional_mito5_mapa)[5]="Número de Alianzas Electorales"
+names(regional_mito5_mapa)[6]="Número de Movimientos Regionales"
+names(regional_mito5_mapa)[7]="Número de Partidos Políticos"
 names(regional_mito5_mapa)[8]="alianza_n_por"
 names(regional_mito5_mapa)[9]="mov_n_por"
 names(regional_mito5_mapa)[10]="par_n_por"
@@ -279,98 +281,65 @@ names(regional_mito5_mapa)[10]="par_n_por"
 #export(regional_mito5_mapa,"regional_mito5_mapa.xlsx")
 ```
 
-**SEGUNDA VUELTA**
-
-**Número de candidaturas en total**
-
-```{r,  echo=FALSE,warning=FALSE,message=FALSE}
-regional_mito5_total_sv=regional%>%
-     filter(Eleccion=="Regional 2002"|Eleccion=="Regional 2006"|Eleccion=="Regional 2010"|Eleccion=="Regional 2014"|Eleccion=="Regional 2018"|Eleccion=="Regional 2022")%>%
-  filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Vuelta == "Segunda")%>%
-  select(Org_pol,Eleccion,Tipo_OP) %>%
-  group_by(Eleccion)%>% 
-  summarise(n=n())
+```{r}
+regional_mito5_mapa=regional_mito5_mapa %>%
+ dplyr::filter(Eleccion=="Regional 2022")
 ```
 
-|     **Elección**      | **Número de candidaturas** |
-|:---------------------:|:--------------------------:|
-| Segunda Regional 2010 |             20             |
-| Segunda Regional 2014 |             28             |
-| Segunda Regional 2018 |             30             |
-| Segunda Regional 2022 |             18             |
 
-**Número de candidaturas por tipo**
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+regional_mito5_mapa$UBIGEO=ifelse(0<regional_mito5_mapa$UBIGEO&regional_mito5_mapa$UBIGEO<10,paste(0,regional_mito5_mapa$UBIGEO, sep = ""), regional_mito5_mapa$UBIGEO)
 
-```{r,  echo=FALSE,warning=FALSE,message=FALSE}
-regional_mito5_tipo_sv=regional%>%
-     filter(Eleccion=="Regional 2002"|Eleccion=="Regional 2006"|Eleccion=="Regional 2010"|Eleccion=="Regional 2014"|Eleccion=="Regional 2018"|Eleccion=="Regional 2022")%>%
-  filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Vuelta == "Segunda")%>%
-  select(Org_pol,Eleccion,Tipo_OP) %>%
-  group_by(Eleccion, Tipo_OP)%>% 
-  summarise(n=n()) %>%
-  mutate(ratio=scales::percent(n/sum(n),accuracy = 0.1))
 ```
 
-|       **Elección**        | **Partido Político** | **Movimiento Regional** | **Alianza Electoral** | **Total** |
-|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
-| **Segunda Regional 2010** |          6           |           12            |           2           |    20     |
-| **Segunda Regional 2014** |          7           |           21            |           0           |    28     |
-| **Segunda Regional 2018** |          11          |           19            |           0           |    30     |
-| **Segunda Regional 2022** |          6           |           12            |           0           |    18     |
 
-```{r,  echo=FALSE,warning=FALSE,message=FALSE}
-ggplot(regional_mito5_tipo_sv, aes(x = Eleccion, y= n, fill = Tipo_OP)) + 
-  geom_bar(stat="identity", position = "fill")+
-  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold")+
-  ggtitle("Porcentaje de candidaturas en Segunda Elección Regional \nsegún tipo de organización")+
-  xlab("Segunda Elección Regional")+ 
-  ylab("Candidaturas (%)")+
-  scale_x_discrete(labels = c("Regional 2002" = "2002","Regional 2006" = "2006","Regional 2010" = "2010","Regional 2014" = "2014","Regional 2018" = "2018","Regional 2022" = "2022"))+
-  scale_fill_manual(values = c("#55BA77","#E55555","#156C99"), labels = c("Alianza Electoral", "Movimiento Regional","Partido Político"))+
-  labs(fill = "Tipo de organización política")+theme_minimal()+
-  scale_y_continuous(labels = scales::percent)+
-  theme(plot.title = element_text(hjust = 0.5))
+```{r,results='hide', echo=FALSE,warning=FALSE,message=FALSE}
+library(raster)
+per_r=getData("GADM", country= "PER", level=1)
+per_r=subset(per_r, NAME_1!="Lima Province" )
+georeg22=merge(per_r,regional_mito5_mapa,by.x="CC_1",by.y="UBIGEO", duplicateGeoms = TRUE)
 
-#ggsave("5_regional_tipo_sv.png")
 ```
+
+**Mapa de Tipo de Organizaciones Políticas de Elecciones Regionales 2022**
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+library(tmap)
+tmap_mode("view")
+tm_shape(georeg22) +
+  tm_polygons(
+    id="Region",
+    col = "Número de Movimientos Regionales",
+    breaks = c(2, 4,6,Inf),
+    pal = "GnBu" ,
+    popup.vars=c("Número de Movimientos Regionales","Número de Partidos Políticos"),
+    title = "Número de Movimientos Regionale 2022",
+    labels=c("2-3","4-5","6-7")
+    ) +
+  #tm_facets(by = "Eleccion", ncol = 1) +
+  tm_view(view.legend.position = c("left","bottom"))
+```
+
+
 
 ## Elecciones Provinciales
 
 
-```{r,echo=FALSE,warning=FALSE,message=FALSE}
-provincial=read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQUlZR5ccTPZzM1Uleflp7gomwKqGI3PCo4DijVl42CXoGl2WwVv7HBr0GJffWILL5b0nwkpP2XfPVF/pub?gid=2059395285&single=true&output=csv", dec = ".")
-```
-
-```{r, echo=FALSE,warning=FALSE,message=FALSE}
-provincial$Tipo_OP<-recode(provincial$Tipo_OP, "'ORGANIZACIÃ“N LOCAL (PROVINCIAL)'='ORGANIZACION LOCAL PROVINCIAL'; 'PARTIDO POLÃ\u008dTICO'='PARTIDO POLITICO'")
-```
-
-
-**Número de candidaturas en total**
-
 ```{r,  echo=FALSE,warning=FALSE,message=FALSE}
 provincial_mito5_total=provincial%>%
-  filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
-  select(Org_pol,Eleccion,Tipo_OP) %>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP) %>%
   group_by(Eleccion)%>% 
   summarise(n=n())
 ```
 
-|    **Elección**     | **Número de candidaturas**  |
-|:-------------------:|:---------------------------:|
-| **Provincial 2002** |            1779             |
-| **Provincial 2006** |            1654             |
-| **Provincial 2010** |            1754             |
-| **Provincial 2014** |            1829             |
-| **Provincial 2018** |            1885             |
-| **Provincial 2022** |            1391             |
 
 **Número de candidaturas por tipo**
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
 provincial_mito5_tipo=provincial%>%
-  filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
-  select(Org_pol,Eleccion,Tipo_OP) %>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP) %>%
   group_by(Eleccion, Tipo_OP)%>% 
   summarise(n=n()) %>% 
   mutate(ratio=scales::percent(n/sum(n),accuracy = 0.1))
@@ -405,8 +374,8 @@ ggplot(provincial_mito5_tipo, aes(x = Eleccion, y= n, fill = Tipo_OP)) +
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
 provincial_mito5_regionA=provincial%>%
-  filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Provincia!= "LIMA")%>%
-  select(Region, Org_pol,Tipo_OP,Eleccion) %>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Provincia!= "LIMA")%>%
+  dplyr::select(Region, Org_pol,Tipo_OP,Eleccion) %>%
   group_by(Region,Eleccion, Tipo_OP)%>%
   summarise(n=n()) %>%
   group_by(Eleccion, Region)%>%
@@ -417,8 +386,8 @@ provincial_mito5_regionA=provincial%>%
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
 provincial_mito5_regionB=provincial%>%
-  filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Provincia== "LIMA")%>%
-  select(Region, Org_pol,Tipo_OP,Eleccion) %>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Provincia== "LIMA")%>%
+  dplyr::select(Region, Org_pol,Tipo_OP,Eleccion) %>%
   group_by(Region,Eleccion, Tipo_OP)%>%
   summarise(n=n()) %>%
   group_by(Eleccion, Region)%>%
@@ -436,19 +405,19 @@ provincial_mito5_region=rbind(provincial_mito5_regionA, provincial_mito5_regionB
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
 provincial_mito5_region1=provincial_mito5_region %>%
- filter(Macrozona=="CENTRO")
+ dplyr::filter(Macrozona=="CENTRO")
 
 provincial_mito5_region2=provincial_mito5_region %>%
- filter(Macrozona=="LIMA Y CALLAO")
+ dplyr::filter(Macrozona=="LIMA Y CALLAO")
 
 provincial_mito5_region3=provincial_mito5_region %>%
- filter(Macrozona=="NORTE")
+ dplyr::filter(Macrozona=="NORTE")
 
 provincial_mito5_region4=provincial_mito5_region %>%
- filter(Macrozona=="ORIENTE")
+ dplyr::filter(Macrozona=="ORIENTE")
 
 provincial_mito5_region5=provincial_mito5_region %>%
- filter(Macrozona=="SUR")
+ dplyr::filter(Macrozona=="SUR")
 ```
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
@@ -555,8 +524,8 @@ ggplot(data = provincial_mito5_region5, aes(x = Eleccion, y= n, fill = Tipo_OP))
 ##PARA MAPA: Número de candidaturas por tipo y provincia
 
 provincial_mito5_prov=provincial%>%
-  filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
-  select(Region,Provincia, Org_pol,Tipo_OP,Eleccion,UBIGEO) %>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Region,Provincia, Org_pol,Tipo_OP,Eleccion,UBIGEO) %>%
   group_by(Region,Provincia,Eleccion, Tipo_OP,UBIGEO)%>%
   summarise(n=n()) %>% 
   group_by(Eleccion, Region, Provincia)%>%
@@ -569,9 +538,9 @@ provincial_mito5_mapa=merge(x=dcast(provincial_mito5_prov, UBIGEO + Region + Pro
 provincial_mito5_mapa[is.na(provincial_mito5_mapa)] = 0
 names(provincial_mito5_mapa)[6]="alianza_n"
 names(provincial_mito5_mapa)[7]="lista_n"
-names(provincial_mito5_mapa)[8]="mov_n"
+names(provincial_mito5_mapa)[8]="Número de Movimientos Regionales"
 names(provincial_mito5_mapa)[9]="org_local_prov_n"
-names(provincial_mito5_mapa)[10]="par_n"
+names(provincial_mito5_mapa)[10]="Número de Partidos Nacionales"
 names(provincial_mito5_mapa)[11]="alianza_n_por"
 names(provincial_mito5_mapa)[12]="lista_n_por"
 names(provincial_mito5_mapa)[13]="mov_n_por_por"
@@ -581,43 +550,62 @@ names(provincial_mito5_mapa)[15]="par_n_por"
 #export(provincial_mito5_mapa,"provincial_mito5_mapa.xlsx")
 ```
 
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+provincial_mito5_mapa=provincial_mito5_mapa %>%
+ dplyr::filter(Eleccion=="Provincial 2022")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+provincial_mito5_mapa$UBIGEO=ifelse(0<provincial_mito5_mapa$UBIGEO&provincial_mito5_mapa$UBIGEO<999,paste(0,provincial_mito5_mapa$UBIGEO, sep = ""), provincial_mito5_mapa$UBIGEO)
+```
+
+**Mapa de Tipo de Organizaciones Políticas de Elecciones Provinciales 2022**
+
+
+```{r,results='hide',echo=FALSE,warning=FALSE,message=FALSE}
+library(rgdal)
+mapprov=readOGR("PROVINCIAS.shp") 
+geoprov22=merge(mapprov,provincial_mito5_mapa,by.x="IDPROV",by.y="UBIGEO", all.x=T)
+```
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+tmap_mode("view")
+tm_shape(geoprov22) +
+  tm_polygons(
+    id="Provincia",
+    col = "Número de Movimientos Regionales",
+    breaks = c(0,3, 6, 9,Inf),
+    pal = "GnBu",
+        popup.vars=c("Número de Movimientos Regionales","Número de Partidos Nacionales"),
+   title = "Número de Movimientos Regionales 2022",
+    labels=c("0-2","3-5","6-8","De 9 a Más")
+    ) +
+  #tm_facets(by = "Eleccion", ncol = 1) +
+  tm_view(view.legend.position = c("left","bottom"))+
+  tmap_options(check.and.fix = TRUE)
+```
+
+
 ## Elecciones Distritales
 
 
-```{r, echo=FALSE,warning=FALSE,message=FALSE}
-distrital=read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQMLHdXuz-ykbp9VmJJGhtl0vdNeeMxjgod2YrYLt9UB3RdX8tb-LEbZr2PVV41Sj384LuK1quysfNj/pub?output=csv", dec='.')
-```
-
-```{r, echo=FALSE,warning=FALSE,message=FALSE}
-distrital$Tipo_OP<-recode(distrital$Tipo_OP, "'ORGANIZACIÃ“N LOCAL (PROVINCIAL)'='ORGANIZACION LOCAL PROVINCIAL';'ORGANIZACION LOCAL (DISTRITAL)'='ORGANIZACION LOCAL DISTRITAL'; 'PARTIDO POLÃ\u008dTICO'='PARTIDO POLITICO'")
-```
-
-
-**Número de candidaturas en total**
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
 distrital_mito5_total=distrital%>%
-  filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
-  select(Org_pol,Eleccion,Tipo_OP) %>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP) %>%
   group_by(Eleccion)%>% 
   summarise(n=n())
 ```
-
-|    **Elección**    | **Número de candidaturas**  |
-|:------------------:|:---------------------------:|
-| **Distrital 2002** |            13220            |
-| **Distrital 2006** |            11160            |
-| **Distrital 2010** |            11420            |
-| **Distrital 2014** |            11536            |
-| **Distrital 2018** |            11599            |
-| **Distrital 2022** |            9128             |
 
 **Número de candidaturas por tipo**
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
 distrital_mito5_tipo=distrital%>%
-  filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
-  select(Org_pol,Eleccion,Tipo_OP) %>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP) %>%
   group_by(Eleccion, Tipo_OP)%>% 
   summarise(n=n()) %>% 
   mutate(ratio=scales::percent(n/sum(n),accuracy = 0.1))
@@ -656,8 +644,8 @@ ggplot(distrital_mito5_tipo, aes(x = Eleccion, y= n, fill = Tipo_OP)) +
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
 distrital_mito5_regionA=distrital%>%
-  filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Provincia!= "LIMA")%>%
-  select(Region,Provincia,Distrito, Org_pol,Tipo_OP,Eleccion) %>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Provincia!= "LIMA")%>%
+  dplyr::select(Region,Provincia,Distrito, Org_pol,Tipo_OP,Eleccion) %>%
   group_by(Region,Eleccion, Tipo_OP)%>%
   summarise(n=n()) %>% 
   group_by(Eleccion, Region)%>%
@@ -668,8 +656,8 @@ distrital_mito5_regionA=distrital%>%
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
 distrital_mito5_regionB=distrital%>%
-  filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Provincia== "LIMA")%>%
-  select(Region,Provincia,Distrito, Org_pol,Tipo_OP,Eleccion) %>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Provincia== "LIMA")%>%
+  dplyr::select(Region,Provincia,Distrito, Org_pol,Tipo_OP,Eleccion) %>%
   group_by(Region,Eleccion, Tipo_OP)%>%
   summarise(n=n()) %>%
   group_by(Eleccion, Region)%>%
@@ -687,19 +675,19 @@ distrital_mito5_region=rbind(distrital_mito5_regionA, distrital_mito5_regionB)
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
 distrital_mito5_region1=distrital_mito5_region %>%
- filter(Macrozona=="CENTRO")
+ dplyr::filter(Macrozona=="CENTRO")
 
 distrital_mito5_region2=distrital_mito5_region %>%
- filter(Macrozona=="LIMA Y CALLAO")
+ dplyr::filter(Macrozona=="LIMA Y CALLAO")
 
 distrital_mito5_region3=distrital_mito5_region %>%
- filter(Macrozona=="NORTE")
+ dplyr::filter(Macrozona=="NORTE")
 
 distrital_mito5_region4=distrital_mito5_region %>%
- filter(Macrozona=="ORIENTE")
+ dplyr::filter(Macrozona=="ORIENTE")
 
 distrital_mito5_region5=distrital_mito5_region %>%
- filter(Macrozona=="SUR")
+ dplyr::filter(Macrozona=="SUR")
 ```
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
@@ -806,8 +794,8 @@ ggplot(data = distrital_mito5_region5, aes(x = Eleccion, y= n, fill = Tipo_OP))+
 ##PARA MAPA: Número de candidaturas por tipo y distrito
 
 distrital_mito5_dist=distrital%>%
-  filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
-  select(Region,Provincia,Distrito, Org_pol,Tipo_OP,Eleccion,UBIGEO) %>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Region,Provincia,Distrito, Org_pol,Tipo_OP,Eleccion,UBIGEO) %>%
   group_by(Region,Provincia, Distrito, Eleccion, Tipo_OP,UBIGEO)%>%
   summarise(n=n()) %>% 
   group_by(Eleccion, Region, Provincia, Distrito)%>%
@@ -820,10 +808,10 @@ distrital_mito5_mapa=merge(x=dcast(distrital_mito5_dist, UBIGEO + Region + Provi
 distrital_mito5_mapa[is.na(distrital_mito5_mapa)] = 0
 names(distrital_mito5_mapa)[7]="alianza_n"
 names(distrital_mito5_mapa)[8]="lista_n"
-names(distrital_mito5_mapa)[9]="mov_n"
+names(distrital_mito5_mapa)[9]="Número de Movimientos Regionales"
 names(distrital_mito5_mapa)[10]="org_local_dist_n"
 names(distrital_mito5_mapa)[11]="org_local_prov_n"
-names(distrital_mito5_mapa)[12]="par_n"
+names(distrital_mito5_mapa)[12]="Número de Partidos Políticos"
 names(distrital_mito5_mapa)[13]="alianza_n_por"
 names(distrital_mito5_mapa)[14]="lista_n_por"
 names(distrital_mito5_mapa)[15]="mov_n_por_por"
@@ -832,4 +820,50 @@ names(distrital_mito5_mapa)[17]="org_local_prov_n_por"
 names(distrital_mito5_mapa)[18]="par_n_por"
 
 #export(distrital_mito5_mapa,"distrital_mito5_mapa.xlsx")
+```
+
+**Mapa de Tipo de Organizaciones Políticas de Elecciones Distritales 2022**
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+distrital_mito5_mapa=distrital_mito5_mapa %>%
+ dplyr::filter(Eleccion=="Distrital 2022")
+```
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+distrital_mito5_mapa$UBIGEO=ifelse(10000<distrital_mito5_mapa$UBIGEO&distrital_mito5_mapa$UBIGEO<100000,paste(0,distrital_mito5_mapa$UBIGEO, sep = ""), distrital_mito5_mapa$UBIGEO)
+```
+
+
+```{r,results='hide',echo=FALSE,warning=FALSE,message=FALSE}
+mapdist=readOGR("LIMITE_DISTRITAL_2020_INEI.shp") 
+geodist22=merge(mapdist,distrital_mito5_mapa,by.x="UBIGEO",by.y="UBIGEO", duplicateGeoms = TRUE)
+#geodist22=geodist22[complete.cases(geodist22@data$`% de votos no válidos`),] 
+```
+
+
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+tmap_mode("view")
+tm_shape(geodist22) +
+  tm_polygons(
+    id="NOMBDIST",
+    col = "Número de Movimientos Regionales",
+    breaks = c(0,3,6,Inf),
+    pal = "GnBu" ,
+    popup.vars=c("Número de Movimientos Regionales","Número de Partidos Políticos"),
+   title = ("Número de Movimientos Regionales 2022"),
+    colorNA = "white",
+    textNA = "Distrito capital sin eleccións",
+    title = "Número de Movimientos Regionale",
+    labels=c("0-2","3-5","6-8","De 9 a más")
+    ) +
+  #tm_facets(by = "Eleccion", ncol = 1)+
+  tm_view(view.legend.position = c("left","bottom"))
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+rm(list=ls())
 ```
