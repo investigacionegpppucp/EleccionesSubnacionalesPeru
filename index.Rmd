@@ -2,7 +2,7 @@
 title: "Fact checking de las Elecciones Subnacionales en Perú"
 author: "Área de investigación e incidencia de la Escuela de Gobierno y Políticas
   Públicas - PUCP"
-date: 'Equipo de trabajo: Jorge Aragón, Marylía Cruz y Paolo Sanchez'
+date: 'Equipo de trabajo: Jorge Aragón, Marylía Cruz, Karina Alcantará y Paolo Sanchez'
 site: bookdown::bookdown_site
 ---
 
