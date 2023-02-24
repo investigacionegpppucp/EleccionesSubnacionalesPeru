@@ -1,0 +1,446 @@
+# 0rganizaciones políticas candidatas
+
+<font size="6"> **El número de organizaciones políticas candidatas aumenta en cada elección ¿verdadero o falso?**</font>
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+library(googlesheets4)
+regional=read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRJdUE26KIgGmrUT8DEUzY5f3JsGlK0-eQdoTeWQw2SPrGpA_bI54jpSDnyE-hBBAoIsBRiAJzoghy-/pub?gid=1313822542&single=true&output=csv",dec=".")
+library(dplyr)
+library(ggplot2)
+library(rio)
+library(car)
+library(ggrepel)
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+library(car)
+regional$Tipo_OP<-recode(regional$Tipo_OP, "'PARTIDO POLÃ\u008dTICO'='PARTIDO POLITICO'")
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+provincial=read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQUlZR5ccTPZzM1Uleflp7gomwKqGI3PCo4DijVl42CXoGl2WwVv7HBr0GJffWILL5b0nwkpP2XfPVF/pub?gid=2059395285&single=true&output=csv", dec = ".")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+provincial$Tipo_OP<-recode(provincial$Tipo_OP, "'ORGANIZACIÃ“N LOCAL (PROVINCIAL)'='ORGANIZACION LOCAL PROVINCIAL'; 'PARTIDO POLÃ\u008dTICO'='PARTIDO POLITICO'")
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+distrital=read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQMLHdXuz-ykbp9VmJJGhtl0vdNeeMxjgod2YrYLt9UB3RdX8tb-LEbZr2PVV41Sj384LuK1quysfNj/pub?output=csv", dec='.')
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+distrital$Tipo_OP<-recode(distrital$Tipo_OP, "'ORGANIZACIÃ“N LOCAL (PROVINCIAL)'='ORGANIZACION LOCAL PROVINCIAL';'ORGANIZACION LOCAL (DISTRITAL)'='ORGANIZACION LOCAL DISTRITAL'; 'PARTIDO POLÃ\u008dTICO'='PARTIDO POLITICO'")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+reg=regional%>%
+     dplyr::filter(Eleccion=="Regional 2002"|Eleccion=="Regional 2006"|Eleccion=="Regional 2010"|Eleccion=="Regional 2014"|Eleccion=="Regional 2018"|Eleccion=="Regional 2022")%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Vuelta == "Primera")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP)
+
+prov=provincial%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP) 
+
+dist=distrital%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP)
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+library(car)
+reg$Eleccion<-recode(reg$Eleccion, "'Regional 2002'='2002'; 'Regional 2006'='2006'; 'Regional 2010'='2010'; 'Regional 2014'='2014'; 'Regional 2018'='2018';'Regional 2022'='2022'")
+prov$Eleccion<-recode(prov$Eleccion, "'Provincial 2002'='2002'; 'Provincial 2006'='2006'; 'Provincial 2010'='2010'; 'Provincial 2014'='2014'; 'Provincial 2018'='2018';'Provincial 2022'='2022'")
+dist$Eleccion<-recode(dist$Eleccion, "'Distrital 2002'='2002'; 'Distrital 2006'='2006'; 'Distrital 2010'='2010'; 'Distrital 2014'='2014'; 'Distrital 2018'='2018';'Distrital 2022'='2022'")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+org_total=rbind(reg, prov, dist) 
+org_total$Eleccion=as.factor(org_total$Eleccion)
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+org_total_graf=org_total %>%
+  unique() %>% 
+  group_by(Eleccion,Tipo_OP) %>% 
+  summarise(n=n())%>%
+  mutate(ratio=scales::percent(n/sum(n), accuracy = 0.1)) %>% 
+  mutate(n_por=n/sum(n))
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+#ggplot(org_total_graf, aes(x=Eleccion, y=n_por, group=Tipo_OP,color=Tipo_OP))+
+ # geom_line()+
+#  geom_point()+
+ # geom_text_repel(aes(label=ratio,vjust=-.9), colour="black", size=3)+
+#  ggtitle("Porcentaje de organizaciones políticas participantes \nen ERM según tipo de organización (2002-2022)")+
+ # xlab("Proceso Electoral")+
+#  ylab("Organizaciones políticas (%)")+
+#  scale_color_manual(values = c("#55BA77","#06E3C3","#E55555","#122C74", "#C18B3D", "#156C99"), labels = c("Alianza Electoral", "Lista Independiente", "Movimiento Regional", "Organización Local Distrital","Organización Local Provincial","Partido Político"))+
+#  labs(color = "")+
+#  theme_minimal()+
+#  scale_y_continuous(labels = scales::percent_format(accuracy = 1),limit=c(0,1))+
+#  theme(legend.text = element_text(colour="black", size=9))+
+#  theme(legend.title = element_text(color = "black", size = 7))+
+#  theme(plot.title = element_text(hjust = 0.5))+
+#  theme(legend.position = "top")
+
+#ggsave("3_general.png")
+```
+
+## Elecciones Regionales
+
+**Número de organizaciones políticas en total**
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+regional_mito3_total=regional%>%
+     dplyr::filter(Eleccion=="Regional 2002"|Eleccion=="Regional 2006"|Eleccion=="Regional 2010"|Eleccion=="Regional 2014"|Eleccion=="Regional 2018"|Eleccion=="Regional 2022")%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Vuelta == "Primera")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP) %>%
+  unique%>%
+  dplyr::group_by(Eleccion)%>% 
+  summarise(n=n())
+```
+
+| **Elección**  | **Número de Org. Políticas** |
+|:-------------:|:----------------------------:|
+| Regional 2002 |              65              |
+| Regional 2006 |             100              |
+| Regional 2010 |             180              |
+| Regional 2014 |             174              |
+| Regional 2018 |             113              |
+| Regional 2022 |              98              |
+
+
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+regional_mito3_region=regional%>%
+     dplyr::filter(Eleccion=="Regional 2002"|Eleccion=="Regional 2006"|Eleccion=="Regional 2010"|Eleccion=="Regional 2014"|Eleccion=="Regional 2018"|Eleccion=="Regional 2022")%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Vuelta == "Primera")%>%
+  dplyr::select(Region,Org_pol,Tipo_OP,Eleccion,UBIGEO)%>%
+  group_by(Region,Eleccion, Tipo_OP,UBIGEO)%>%
+  summarise(n=n()) %>%
+  group_by(Eleccion, Region)%>%
+  mutate(total_org_pol = sum(n)) %>% 
+  mutate(ratio=scales::percent(n/total_org_pol,accuracy = 0.1)) %>% 
+  mutate(Macrozona= ifelse(Region=="AMAZONAS"|Region=="LORETO"|Region=="SAN MARTIN"|Region=="UCAYALI", "ORIENTE", ifelse(Region=="APURIMAC"|Region=="AREQUIPA"|Region=="CUSCO"|Region=="MADRE DE DIOS"|Region=="MOQUEGUA"|Region=="PUNO"|Region=="TACNA", "SUR", ifelse(Region=="CAJAMARCA"|Region=="LA LIBERTAD"|Region=="LAMBAYEQUE"|Region=="PIURA"|Region=="TUMBES", "NORTE", ifelse(Region=="CALLAO"|Region=="LIMA", "LIMA Y CALLAO", "CENTRO")))))
+```
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+#PARA MAPA
+
+library(reshape2)
+regional_mito3_mapa=merge(x=dcast(regional_mito3_region, UBIGEO + Region + Eleccion + total_org_pol ~ Tipo_OP, value.var = "n"), y=dcast(regional_mito3_region, UBIGEO + Region + Eleccion ~ Tipo_OP, value.var = "ratio"), by= c("UBIGEO", "Region", "Eleccion"), all = TRUE)
+regional_mito3_mapa[is.na(regional_mito3_mapa)] = 0
+names(regional_mito3_mapa)[5]="alianza_n"
+names(regional_mito3_mapa)[6]="mov_n"
+names(regional_mito3_mapa)[7]="par_n"
+names(regional_mito3_mapa)[8]="alianza_n_por"
+names(regional_mito3_mapa)[9]="mov_n_por"
+names(regional_mito3_mapa)[10]="par_n_por"
+
+#export(regional_mito3_mapa,"regional_mito3_mapa.xlsx")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+
+regional_mito3_mapa_a=dcast(regional_mito3_mapa,UBIGEO + Region  ~ Eleccion,value.var = "total_org_pol")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+names(regional_mito3_mapa_a)[3]="Número de organizaciones políticas candidatas 2002"
+names(regional_mito3_mapa_a)[4]="Número de organizaciones políticas candidatas 2006"
+names(regional_mito3_mapa_a)[5]="Número de organizaciones políticas candidatas 2010"
+names(regional_mito3_mapa_a)[6]="Número de organizaciones políticas candidatas 2014"
+names(regional_mito3_mapa_a)[7]="Número de organizaciones políticas candidatas 2018"
+names(regional_mito3_mapa_a)[8]="Número de organizaciones políticas candidatas 2022"
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+regional_mito3_mapa_a$UBIGEO=ifelse(0<regional_mito3_mapa_a$UBIGEO&regional_mito3_mapa_a$UBIGEO<10,paste(0,regional_mito3_mapa_a$UBIGEO, sep = ""), regional_mito3_mapa_a$UBIGEO)
+
+```
+
+```{r,results='hide', echo=FALSE,warning=FALSE,message=FALSE}
+library(raster)
+per_r=getData("GADM", country= "PER", level=1)
+per_r=subset(per_r, NAME_1!="Lima Province" )
+georeg22=merge(per_r,regional_mito3_mapa_a,by.x="CC_1",by.y="UBIGEO", duplicateGeoms = TRUE)
+
+```
+
+<font size="5"> **Mapa del Número de Organizaciones Políticas Candidatas **</font>
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+library(tmap)
+tmap_mode("view")
+tm_shape(georeg22) +
+  tm_polygons(
+    id="Region",
+    col = "Número de organizaciones políticas candidatas 2022",
+    breaks = c(4, 8, 12,Inf),
+    pal = "YlOrBr" ,
+    popup.vars=c("Número de organizaciones políticas candidatas 2002","Número de organizaciones políticas candidatas 2006","Número de organizaciones políticas candidatas 2010","Número de organizaciones políticas candidatas 2014","Número de organizaciones políticas candidatas 2018","Número de organizaciones políticas candidatas 2018","Número de organizaciones políticas candidatas 2022"),
+    title = "Número de organizaciones políticas candidatas 2022",
+    labels=c("4-7","8-11","12 a más")
+    ) +
+  #tm_facets(by = "Eleccion", ncol = 1) +
+  tm_view(view.legend.position = c("left","bottom"))
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+rm(regional_mito3_mapa)
+```
+
+
+## Elecciones Provinciales
+
+**Número de organizaciones políticas en total**
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+provincial_mito3_total=provincial%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP) %>%
+  unique%>%
+  dplyr::group_by(Eleccion)%>% 
+  summarise(n=n())
+```
+
+|    **Elección**     | **Número de Org. Políticas** |
+|:-------------------:|:----------------------------:|
+| **Provincial 2002** |             425              |
+| **Provincial 2006** |             246              |
+| **Provincial 2010** |             254              |
+| **Provincial 2014** |             239              |
+| **Provincial 2018** |             132              |
+| **Provincial 2022** |             125              |
+
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+##PARA MAPA: Número de org políticas por tipo y provincia
+
+provincial_mito3_prov=provincial%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Region,Provincia, Org_pol,Tipo_OP,Eleccion,UBIGEO) %>%
+  group_by(Region,Provincia,Eleccion, Tipo_OP,UBIGEO)%>%
+  summarise(n=n()) %>% 
+  group_by(Eleccion, Region, Provincia)%>%
+  mutate(total_org_pol = sum(n)) %>% 
+  mutate(ratio=scales::percent(n/total_org_pol,accuracy = 0.1))
+```
+
+
+
+
+
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+##PARA MAPA: Número de org políticas por tipo y provincia
+
+provincial_mito3_mapa=merge(x=dcast(provincial_mito3_prov, UBIGEO + Region + Provincia + Eleccion +total_org_pol ~ Tipo_OP, value.var = "n"), y=dcast(provincial_mito3_prov, UBIGEO + Region + Provincia + Eleccion + total_org_pol ~ Tipo_OP, value.var = "ratio"), by= c("UBIGEO", "Region", "Provincia", "Eleccion", "total_org_pol"), all = TRUE)
+provincial_mito3_mapa[is.na(provincial_mito3_mapa)] = 0
+names(provincial_mito3_mapa)[6]="alianza_n"
+names(provincial_mito3_mapa)[7]="lista_n"
+names(provincial_mito3_mapa)[8]="mov_n"
+names(provincial_mito3_mapa)[9]="org_local_prov_n"
+names(provincial_mito3_mapa)[10]="par_n"
+names(provincial_mito3_mapa)[11]="alianza_n_por"
+names(provincial_mito3_mapa)[12]="lista_n_por"
+names(provincial_mito3_mapa)[13]="mov_n_por"
+names(provincial_mito3_mapa)[14]="org_local_prov_n_por"
+names(provincial_mito3_mapa)[15]="par_n_por"
+
+#export(provincial_mito3_mapa,"provincial_mito3_mapa.xlsx")
+```
+
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+
+provincial_mito3_mapa_a=dcast(provincial_mito3_mapa,UBIGEO + Region +Provincia ~ Eleccion,value.var = "total_org_pol")
+```
+
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+provincial_mito3_mapa_a$UBIGEO=ifelse(0<provincial_mito3_mapa_a$UBIGEO&provincial_mito3_mapa_a$UBIGEO<999,paste(0,provincial_mito3_mapa_a$UBIGEO, sep = ""), provincial_mito3_mapa_a$UBIGEO)
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+names(provincial_mito3_mapa_a)[4]="Número de organizaciones políticas candidatas 2002"
+names(provincial_mito3_mapa_a)[5]="Número de organizaciones políticas candidatas 2006"
+names(provincial_mito3_mapa_a)[6]="Número de organizaciones políticas candidatas 2010"
+names(provincial_mito3_mapa_a)[7]="Número de organizaciones políticas candidatas 2014"
+names(provincial_mito3_mapa_a)[8]="Número de organizaciones políticas candidatas 2018"
+names(provincial_mito3_mapa_a)[9]="Número de organizaciones políticas candidatas 2022"
+```
+
+
+**Mapa de Número de Organizaciones Políticas de Elecciones Provinciales 2022**
+
+```{r,results='hide',echo=FALSE,warning=FALSE,message=FALSE}
+library(rgdal)
+mapprov=readOGR("PROVINCIAS.shp") 
+geoprov22=merge(mapprov,provincial_mito3_mapa_a,by.x="IDPROV",by.y="UBIGEO", all.x=T)
+```
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+tmap_mode("view")
+tm_shape(geoprov22) +
+  tm_polygons(
+    id="Provincia",
+    col = "Número de organizaciones políticas candidatas 2022",
+    breaks = c(4, 8, 12,Inf),
+    pal = "YlOrBr",
+        popup.vars=c("Número de organizaciones políticas candidatas 2002","Número de organizaciones políticas candidatas 2006","Número de organizaciones políticas candidatas 2010","Número de organizaciones políticas candidatas 2014","Número de organizaciones políticas candidatas 2018","Número de organizaciones políticas candidatas 2018","Número de organizaciones políticas candidatas 2022"),
+   title = "Número de organizaciones políticas candidatas 2022",
+    labels=c("4-7","8-11","12 a más")
+    ) +
+  #tm_facets(by = "Eleccion", ncol = 1) +
+  tm_view(view.legend.position = c("left","bottom"))+
+  tmap_options(check.and.fix = TRUE)
+```
+
+
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+rm(provincial_mito3_mapa,provincial_mito3_mapa_a,provincial_mito3_prov,provincial_mito3_total)
+```
+
+
+## Elecciones Distritales
+
+**Número de organizaciones políticas en total**
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+distrital_mito3_total=distrital%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP) %>%
+  unique%>%
+  group_by(Eleccion)%>% 
+  summarise(n=n())
+```
+
+|    **Elección**    | **Número de Org. Políticas** |
+|:------------------:|:----------------------------:|
+| **Distrital 2002** |             1494             |
+| **Distrital 2006** |             544              |
+| **Distrital 2010** |             547              |
+| **Distrital 2014** |             396              |
+| **Distrital 2018** |             149              |
+| **Distrital 2022** |             127              |
+
+**Número de organizaciones políticas por tipo**
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+distrital_mito3_tipo=distrital%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP) %>%
+  unique%>%
+  group_by(Eleccion, Tipo_OP)%>% 
+  summarise(n=n()) %>% 
+  mutate(ratio=scales::percent(n/sum(n),accuracy = 0.1))
+
+
+#library(knitr)
+#library(kableExtra)
+#kable(dcast(distrital_mito3_tipo, Eleccion ~ Tipo_OP, value.var = "n"))%>%kable_styling()
+```
+
+
+
+```{r,  echo=FALSE,warning=FALSE,message=FALSE}
+##PARA MAPA: Número de org políticas por tipo y distrito
+
+distrital_mito3_dist=distrital%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Region,Provincia,Distrito, Org_pol,Tipo_OP,Eleccion,UBIGEO) %>%
+  dplyr::group_by(Region,Provincia, Distrito, Eleccion, Tipo_OP,UBIGEO)%>%
+  summarise(n=n()) %>% 
+  group_by(Eleccion, Region, Provincia, Distrito)%>%
+  mutate(total_org_pol = sum(n)) %>% 
+  mutate(ratio=scales::percent(n/total_org_pol,accuracy = 0.1))
+```
+
+```{r,  echo=FALSE,warning=FALSE,message=FALSE}
+##PARA MAPA: Número de org políticas por tipo y distrito
+
+distrital_mito3_mapa=merge(x=dcast(distrital_mito3_dist, UBIGEO + Region + Provincia + Distrito + Eleccion +total_org_pol ~ Tipo_OP, value.var = "n"), y=dcast(distrital_mito3_dist, UBIGEO + Region + Provincia + Distrito+Eleccion+total_org_pol ~ Tipo_OP, value.var = "ratio"), by= c("UBIGEO", "Region", "Provincia", "Distrito", "Eleccion","total_org_pol"), all = TRUE)
+distrital_mito3_mapa[is.na(distrital_mito3_mapa)] = 0
+names(distrital_mito3_mapa)[7]="alianza_n"
+names(distrital_mito3_mapa)[8]="lista_n"
+names(distrital_mito3_mapa)[9]="mov_n"
+names(distrital_mito3_mapa)[10]="org_local_dist_n"
+names(distrital_mito3_mapa)[11]="org_local_prov_n"
+names(distrital_mito3_mapa)[12]="par_n"
+names(distrital_mito3_mapa)[13]="alianza_n_por"
+names(distrital_mito3_mapa)[14]="lista_n_por"
+names(distrital_mito3_mapa)[15]="mov_n_por_por"
+names(distrital_mito3_mapa)[16]="org_local_dist_n_por"
+names(distrital_mito3_mapa)[17]="org_local_prov_n_por"
+names(distrital_mito3_mapa)[18]="par_n_por"
+
+#Nota: En 2022, debería haber 1694
+#export(distrital_mito3_mapa,"distrital_mito3_mapa.xlsx")
+```
+
+**Mapa de Número de Organizaciones Políticas de Elecciones Distritales 2022**
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+
+distrital_mito3_mapa_a=dcast(distrital_mito3_mapa,UBIGEO + Region +Provincia +Distrito~ Eleccion,value.var = "total_org_pol")
+```
+
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+distrital_mito3_mapa_a$UBIGEO=ifelse(10000<distrital_mito3_mapa_a$UBIGEO&distrital_mito3_mapa_a$UBIGEO<100000,paste(0,distrital_mito3_mapa_a$UBIGEO, sep = ""), distrital_mito3_mapa_a$UBIGEO)
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+names(distrital_mito3_mapa_a)[5]="Número de organizaciones políticas candidatas 2002"
+names(distrital_mito3_mapa_a)[6]="Número de organizaciones políticas candidatas 2006"
+names(distrital_mito3_mapa_a)[7]="Número de organizaciones políticas candidatas 2010"
+names(distrital_mito3_mapa_a)[8]="Número de organizaciones políticas candidatas 2014"
+names(distrital_mito3_mapa_a)[9]="Número de organizaciones políticas candidatas 2018"
+names(distrital_mito3_mapa_a)[10]="Número de organizaciones políticas candidatas 2022"
+```
+
+
+```{r,results='hide',echo=FALSE,warning=FALSE,message=FALSE}
+mapdist=readOGR("LIMITE_DISTRITAL_2020_INEI.shp") 
+geodist22=merge(mapdist,distrital_mito3_mapa_a,by.x="UBIGEO",by.y="UBIGEO", duplicateGeoms = TRUE)
+#geodist22=geodist22[complete.cases(geodist22@data$`% de votos no válidos`),] 
+```
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+tmap_mode("view")
+tm_shape(geodist22) +
+  tm_polygons(
+    id="NOMBDIST",
+    col = "Número de organizaciones políticas candidatas 2022",
+    breaks = c(0,6,11,16,20,Inf),
+    pal = "YlOrBr" ,
+    popup.vars=c("Número de organizaciones políticas candidatas 2002","Número de organizaciones políticas candidatas 2006","Número de organizaciones políticas candidatas 2010","Número de organizaciones políticas candidatas 2014","Número de organizaciones políticas candidatas 2018","Número de organizaciones políticas candidatas 2018","Número de organizaciones políticas candidatas 2022"),
+    colorNA = "white",
+    textNA = "Distrito capital sin elección",
+    title = "Número de organizaciones políticas candidatas 2022",
+    labels=c("0-5","6-10","11-15","16-20","De 20 a más")
+    ) +
+  #tm_facets(by = "Eleccion", ncol = 1)+
+  tm_view(view.legend.position = c("left","bottom"))
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+rm(list=ls())
+```

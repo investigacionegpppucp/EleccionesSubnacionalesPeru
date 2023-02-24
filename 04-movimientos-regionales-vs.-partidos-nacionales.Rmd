@@ -1,0 +1,869 @@
+# Movimientos regionales vs. Partidos Nacionales
+
+<font size="6"> **Las Elecciones Regionales y Municipales son mayoritariamente una competencia entre movimientos regionales ¿verdadero o falso?**</font>
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+library(googlesheets4)
+regional=read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRJdUE26KIgGmrUT8DEUzY5f3JsGlK0-eQdoTeWQw2SPrGpA_bI54jpSDnyE-hBBAoIsBRiAJzoghy-/pub?gid=1313822542&single=true&output=csv",dec=".")
+library(dplyr)
+library(ggplot2)
+library(rio)
+library(car)
+library(ggrepel)
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+library(car)
+regional$Tipo_OP<-recode(regional$Tipo_OP, "'PARTIDO POLÃ\u008dTICO'='PARTIDO POLITICO'")
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+provincial=read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQUlZR5ccTPZzM1Uleflp7gomwKqGI3PCo4DijVl42CXoGl2WwVv7HBr0GJffWILL5b0nwkpP2XfPVF/pub?gid=2059395285&single=true&output=csv", dec = ".")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+provincial$Tipo_OP<-recode(provincial$Tipo_OP, "'ORGANIZACIÃ“N LOCAL (PROVINCIAL)'='ORGANIZACION LOCAL PROVINCIAL'; 'PARTIDO POLÃ\u008dTICO'='PARTIDO POLITICO'")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+distrital=read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQMLHdXuz-ykbp9VmJJGhtl0vdNeeMxjgod2YrYLt9UB3RdX8tb-LEbZr2PVV41Sj384LuK1quysfNj/pub?output=csv", dec='.')
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+distrital$Tipo_OP<-recode(distrital$Tipo_OP, "'ORGANIZACIÃ“N LOCAL (PROVINCIAL)'='ORGANIZACION LOCAL PROVINCIAL';'ORGANIZACION LOCAL (DISTRITAL)'='ORGANIZACION LOCAL DISTRITAL'; 'PARTIDO POLÃ\u008dTICO'='PARTIDO POLITICO'")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+reg=regional%>%
+     dplyr::filter(Eleccion=="Regional 2002"|Eleccion=="Regional 2006"|Eleccion=="Regional 2010"|Eleccion=="Regional 2014"|Eleccion=="Regional 2018"|Eleccion=="Regional 2022")%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Vuelta == "Primera")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP)
+
+prov=provincial%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP) 
+
+dist=distrital%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP)
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+library(car)
+reg$Eleccion<-recode(reg$Eleccion, "'Regional 2002'='2002'; 'Regional 2006'='2006'; 'Regional 2010'='2010'; 'Regional 2014'='2014'; 'Regional 2018'='2018';'Regional 2022'='2022'")
+prov$Eleccion<-recode(prov$Eleccion, "'Provincial 2002'='2002'; 'Provincial 2006'='2006'; 'Provincial 2010'='2010'; 'Provincial 2014'='2014'; 'Provincial 2018'='2018';'Provincial 2022'='2022'")
+dist$Eleccion<-recode(dist$Eleccion, "'Distrital 2002'='2002'; 'Distrital 2006'='2006'; 'Distrital 2010'='2010'; 'Distrital 2014'='2014'; 'Distrital 2018'='2018';'Distrital 2022'='2022'")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+cand_total=rbind(reg, prov, dist) 
+cand_total$Eleccion=as.factor(cand_total$Eleccion)
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+cand_total_graf=cand_total %>% 
+  group_by(Eleccion,Tipo_OP) %>% 
+  summarise(n=n())%>%
+  mutate(ratio=scales::percent(n/sum(n), accuracy = 0.1)) %>% 
+  mutate(n_por=n/sum(n))
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(cand_total_graf, aes(x=Eleccion, y=n_por, group=Tipo_OP, color = Tipo_OP))+
+  geom_line()+
+  geom_point()+
+  geom_text_repel(aes(label=ratio,vjust=-.9), colour="black", size=3)+
+  ggtitle("Porcentaje de candidaturas en ERM (2002-2022) \n según tipo de organización")+
+  xlab("Proceso Electoral")+
+  ylab("Candidaturas (%)")+
+  scale_color_manual(values = c("#55BA77","#06E3C3","#E55555","#122C74", "#C18B3D", "#156C99"), labels = c("Alianza Electoral", "Lista Independiente", "Movimiento Regional", "Organización Local Distrital","Organización Local Provincial","Partido Político"))+
+  labs(color = "")+
+  theme_minimal()+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1),limit=c(0,0.7))+
+  theme(legend.text = element_text(colour="black", size=9))+
+  theme(legend.title = element_text(color = "black", size = 7))+
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(legend.position = "top")
+
+#ggsave("5_general.png")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+rm(cand_total,cand_total_graf,dist,prov,reg)
+```
+
+## Elecciones Regionales
+
+
+
+**Número de organizaciones candidatas por tipo**
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+regional_mito5_tipo=regional%>%
+    dplyr:: filter(Eleccion=="Regional 2002"|Eleccion=="Regional 2006"|Eleccion=="Regional 2010"|Eleccion=="Regional 2014"|Eleccion=="Regional 2018"|Eleccion=="Regional 2022")%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Vuelta == "Primera")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP) %>%
+  group_by(Eleccion, Tipo_OP)%>% 
+  summarise(n=n())%>%
+  mutate(ratio=scales::percent(n/sum(n),accuracy = 0.1))
+```
+
+|   **Elección**    | **Partido Político** | **Movimiento Regional** | **Alianza Electoral** | **Total** |
+|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
+| **Regional 2002** |         149          |           52            |          22           |    223    |
+| **Regional 2006** |         140          |           70            |          15           |    225    |
+| **Regional 2010** |         138          |           140           |          17           |    295    |
+| **Regional 2014** |         153          |           146           |          12           |    311    |
+| **Regional 2018** |         223          |           91            |           0           |    314    |
+| **Regional 2022** |         116          |           87            |           0           |    203    |
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(regional_mito5_tipo, aes(x = Eleccion, y=n, fill = Tipo_OP)) + 
+  geom_bar(stat="identity",position = "fill")+
+  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold")+
+  ggtitle("Porcentaje de candidaturas en Elecciones Regionales \nsegún tipo de organización")+
+  xlab("Elección Regional")+ 
+  ylab("Candidaturas (%)")+
+  scale_x_discrete(labels = c("Regional 2002" = "2002","Regional 2006" = "2006","Regional 2010" = "2010","Regional 2014" = "2014","Regional 2018" = "2018","Regional 2022" = "2022"))+
+  scale_fill_manual(values = c("#55BA77","#E55555","#156C99"), labels = c("Alianza Electoral", "Movimiento Regional","Partido Político"))+
+  labs(fill = "Tipo de organización política")+theme_minimal()+
+  scale_y_continuous(labels = scales::percent)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("5_regional_tipo.png")
+```
+
+**Porcentaje de candidaturas por tipo y región**
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+regional_mito5_region=regional%>%
+     dplyr::filter(Eleccion=="Regional 2002"|Eleccion=="Regional 2006"|Eleccion=="Regional 2010"|Eleccion=="Regional 2014"|Eleccion=="Regional 2018"|Eleccion=="Regional 2022")%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Vuelta == "Primera")%>%
+  dplyr::select(Region,Org_pol,Tipo_OP,Eleccion,UBIGEO) %>%
+  group_by(Region,Eleccion, Tipo_OP,UBIGEO)%>%
+  summarise(n=n()) %>%
+  group_by(Eleccion, Region)%>%
+  mutate(total_org_pol = sum(n)) %>% 
+  mutate(ratio=scales::percent(n/total_org_pol,accuracy = 0.1)) %>% 
+  mutate(Macrozona= ifelse(Region=="AMAZONAS"|Region=="LORETO"|Region=="SAN MARTIN"|Region=="UCAYALI", "ORIENTE", ifelse(Region=="APURIMAC"|Region=="AREQUIPA"|Region=="CUSCO"|Region=="MADRE DE DIOS"|Region=="MOQUEGUA"|Region=="PUNO"|Region=="TACNA", "SUR", ifelse(Region=="CAJAMARCA"|Region=="LA LIBERTAD"|Region=="LAMBAYEQUE"|Region=="PIURA"|Region=="TUMBES", "NORTE", ifelse(Region=="CALLAO"|Region=="LIMA", "LIMA Y CALLAO", "CENTRO")))))
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+regional_mito5_region1=regional_mito5_region %>%
+ dplyr::filter(Macrozona=="CENTRO")
+
+regional_mito5_region2=regional_mito5_region %>%
+ dplyr::filter(Macrozona=="LIMA Y CALLAO")
+
+regional_mito5_region3=regional_mito5_region %>%
+ dplyr::filter(Macrozona=="NORTE")
+
+regional_mito5_region4=regional_mito5_region %>%
+ dplyr::filter(Macrozona=="ORIENTE")
+
+regional_mito5_region5=regional_mito5_region %>%
+ dplyr::filter(Macrozona=="SUR")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = regional_mito5_region1, aes(x = Eleccion, y= n, fill = Tipo_OP))+ 
+  geom_bar(stat="identity",position = "fill")+
+  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold", size=1.5)+
+  facet_wrap(~Region, ncol = 3)+
+  ggtitle("Porcentaje de candidaturas en Elecciones Regionales \nsegún tipo de organización y región \nMacrozona Centro")+
+  xlab("Elección Regional")+ 
+  ylab("Candidaturas (%)")+
+  scale_x_discrete(labels = c("Regional 2002" = "2002","Regional 2006" = "2006","Regional 2010" = "2010","Regional 2014" = "2014","Regional 2018" = "2018","Regional 2022" = "2022"))+
+  scale_fill_manual(values = c("#55BA77","#E55555","#156C99"), labels = c("Alianza Electoral", "Movimiento Regional","Partido Político"))+
+  labs(fill = "Tipo de organización política")+theme_minimal()+
+  theme(axis.text = element_text(size=5))+
+  theme(legend.text = element_text(colour="black", size=8))+
+  theme(legend.title = element_text(color = "black", size = 8))+
+  scale_y_continuous(labels = scales::percent)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("5_regional_regionA.png")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = regional_mito5_region2, aes(x = Eleccion, y= n, fill = Tipo_OP))+ 
+  geom_bar(stat="identity",position = "fill")+
+  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold", size=1.5)+
+  facet_wrap(~Region, ncol = 3)+
+  ggtitle("Porcentaje de candidaturas en Elecciones Regionales \nsegún tipo de organización y región \nMacrozona Lima y Callao")+
+  xlab("Elección Regional")+ 
+  ylab("Candidaturas (%)")+
+  scale_x_discrete(labels = c("Regional 2002" = "2002","Regional 2006" = "2006","Regional 2010" = "2010","Regional 2014" = "2014","Regional 2018" = "2018","Regional 2022" = "2022"))+
+  scale_fill_manual(values = c("#55BA77","#E55555","#156C99"), labels = c("Alianza Electoral", "Movimiento Regional","Partido Político"))+
+  labs(fill = "Tipo de organización política")+theme_minimal()+
+  theme(axis.text = element_text(size=5))+
+  theme(legend.text = element_text(colour="black", size=8))+
+  theme(legend.title = element_text(color = "black", size = 8))+
+  scale_y_continuous(labels = scales::percent)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("5_regional_regionB.png")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = regional_mito5_region3, aes(x = Eleccion, y= n, fill = Tipo_OP))+ 
+  geom_bar(stat="identity",position = "fill")+
+  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold", size=1.5)+
+  facet_wrap(~Region, ncol = 3)+
+  ggtitle("Porcentaje de candidaturas en Elecciones Regionales \nsegún tipo de organización y región \nMacrozona Norte")+
+  xlab("Elección Regional")+ 
+  ylab("Candidaturas (%)")+
+  scale_x_discrete(labels = c("Regional 2002" = "2002","Regional 2006" = "2006","Regional 2010" = "2010","Regional 2014" = "2014","Regional 2018" = "2018","Regional 2022" = "2022"))+
+  scale_fill_manual(values = c("#55BA77","#E55555","#156C99"), labels = c("Alianza Electoral", "Movimiento Regional","Partido Político"))+
+  labs(fill = "Tipo de organización política")+theme_minimal()+
+  theme(axis.text = element_text(size=5))+
+  theme(legend.text = element_text(colour="black", size=8))+
+  theme(legend.title = element_text(color = "black", size = 8))+
+  scale_y_continuous(labels = scales::percent)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("5_regional_regionC.png")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = regional_mito5_region4, aes(x = Eleccion, y= n, fill = Tipo_OP))+ 
+  geom_bar(stat="identity",position = "fill")+
+  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold", size=1.5)+
+  facet_wrap(~Region, ncol = 2)+
+  ggtitle("Porcentaje de candidaturas en Elecciones Regionales \nsegún tipo de organización y región \nMacrozona Oriente")+
+  xlab("Elección Regional")+ 
+  ylab("Candidaturas (%)")+
+  scale_x_discrete(labels = c("Regional 2002" = "2002","Regional 2006" = "2006","Regional 2010" = "2010","Regional 2014" = "2014","Regional 2018" = "2018","Regional 2022" = "2022"))+
+  scale_fill_manual(values = c("#55BA77","#E55555","#156C99"), labels = c("Alianza Electoral", "Movimiento Regional","Partido Político"))+
+  labs(fill = "Tipo de organización política")+theme_minimal()+
+  theme(axis.text = element_text(size=5))+
+  theme(legend.text = element_text(colour="black", size=8))+
+  theme(legend.title = element_text(color = "black", size = 8))+
+  scale_y_continuous(labels = scales::percent)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("5_regional_regionD.png")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = regional_mito5_region5, aes(x = Eleccion, y= n, fill = Tipo_OP))+ 
+  geom_bar(stat="identity",position = "fill")+
+  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold", size=1.5)+
+  facet_wrap(~Region, ncol = 3)+
+  ggtitle("Porcentaje de candidaturas en Elecciones Regionales \nsegún tipo de organización y región \nMacrozona Sur")+
+  xlab("Elección Regional")+ 
+  ylab("Candidaturas (%)")+
+  scale_x_discrete(labels = c("Regional 2002" = "2002","Regional 2006" = "2006","Regional 2010" = "2010","Regional 2014" = "2014","Regional 2018" = "2018","Regional 2022" = "2022"))+
+  scale_fill_manual(values = c("#55BA77","#E55555","#156C99"), labels = c("Alianza Electoral", "Movimiento Regional","Partido Político"))+
+  labs(fill = "Tipo de organización política")+theme_minimal()+
+  theme(axis.text = element_text(size=5))+
+  theme(legend.text = element_text(colour="black", size=8))+
+  theme(legend.title = element_text(color = "black", size = 8))+
+  scale_y_continuous(labels = scales::percent)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("5_regional_regionE.png")
+```
+
+```{r,  echo=FALSE,warning=FALSE,message=FALSE}
+##PARA MAPA: Número de candidaturas por tipo y región
+
+library(reshape2)
+regional_mito5_mapa=merge(x=dcast(regional_mito5_region, UBIGEO + Region + Eleccion + total_org_pol ~ Tipo_OP, value.var = "n"), y=dcast(regional_mito5_region, UBIGEO + Region + Eleccion ~ Tipo_OP, value.var = "ratio"), by= c("UBIGEO", "Region", "Eleccion"), all = TRUE)
+regional_mito5_mapa[is.na(regional_mito5_mapa)] = 0
+names(regional_mito5_mapa)[5]="Número de Alianzas Electorales"
+names(regional_mito5_mapa)[6]="Número de Movimientos Regionales"
+names(regional_mito5_mapa)[7]="Número de Partidos Políticos"
+names(regional_mito5_mapa)[8]="alianza_n_por"
+names(regional_mito5_mapa)[9]="mov_n_por"
+names(regional_mito5_mapa)[10]="par_n_por"
+
+#export(regional_mito5_mapa,"regional_mito5_mapa.xlsx")
+```
+
+```{r}
+regional_mito5_mapa=regional_mito5_mapa %>%
+ dplyr::filter(Eleccion=="Regional 2022")
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+regional_mito5_mapa$UBIGEO=ifelse(0<regional_mito5_mapa$UBIGEO&regional_mito5_mapa$UBIGEO<10,paste(0,regional_mito5_mapa$UBIGEO, sep = ""), regional_mito5_mapa$UBIGEO)
+
+```
+
+
+```{r,results='hide', echo=FALSE,warning=FALSE,message=FALSE}
+library(raster)
+per_r=getData("GADM", country= "PER", level=1)
+per_r=subset(per_r, NAME_1!="Lima Province" )
+georeg22=merge(per_r,regional_mito5_mapa,by.x="CC_1",by.y="UBIGEO", duplicateGeoms = TRUE)
+
+```
+
+**Mapa de Tipo de Organizaciones Políticas de Elecciones Regionales 2022**
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+library(tmap)
+tmap_mode("view")
+tm_shape(georeg22) +
+  tm_polygons(
+    id="Region",
+    col = "Número de Movimientos Regionales",
+    breaks = c(2, 4,6,Inf),
+    pal = "GnBu" ,
+    popup.vars=c("Número de Movimientos Regionales","Número de Partidos Políticos"),
+    title = "Número de Movimientos Regionale 2022",
+    labels=c("2-3","4-5","6-7")
+    ) +
+  #tm_facets(by = "Eleccion", ncol = 1) +
+  tm_view(view.legend.position = c("left","bottom"))
+```
+
+
+
+## Elecciones Provinciales
+
+
+```{r,  echo=FALSE,warning=FALSE,message=FALSE}
+provincial_mito5_total=provincial%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP) %>%
+  group_by(Eleccion)%>% 
+  summarise(n=n())
+```
+
+
+**Número de candidaturas por tipo**
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+provincial_mito5_tipo=provincial%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP) %>%
+  group_by(Eleccion, Tipo_OP)%>% 
+  summarise(n=n()) %>% 
+  mutate(ratio=scales::percent(n/sum(n),accuracy = 0.1))
+```
+
+|    **Elección**     | **Partido Político** | **Movimiento Regional** | **Alianza Electoral** | **Organización Local Provincial** | **Lista Independiente** | **Total** |
+|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|
+| **Provincial 2002** |         1046         |           226           |          171          |                 0                 |           356           |   1779    |
+| **Provincial 2006** |         1012         |           430           |          111          |                101                |            0            |   1654    |
+| **Provincial 2010** |         846          |           754           |          112          |                42                 |            0            |   1754    |
+| **Provincial 2014** |         817          |           908           |          62           |                42                 |            0            |   1829    |
+| **Provincial 2018** |         1217         |           665           |           0           |                 3                 |            0            |   1885    |
+| **Provincial 2022** |         762          |           629           |           0           |                 0                 |            0            |   1391    |
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(provincial_mito5_tipo, aes(x = Eleccion, y= n, fill = Tipo_OP)) + 
+  geom_bar(stat="identity", position = "fill")+
+  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold", size=3)+
+  ggtitle("Porcentaje de candidaturas en Elecciones Provinciales \nsegún tipo de organización")+
+  xlab("Elección Provincial")+ 
+  ylab("Candidaturas (%)")+
+  scale_x_discrete(labels = c("Provincial 2002" = "2002","Provincial 2006" = "2006","Provincial 2010" = "2010","Provincial 2014" = "2014","Provincial 2018" = "2018","Provincial 2022" = "2022"))+
+  scale_fill_manual(values = c("#55BA77","#06E3C3","#E55555","#C18B3D", "#156C99"), labels = c("Alianza Electoral", "Lista Independiente", "Movimiento Regional", "Organización Local Provincial","Partido Político"))+
+  labs(fill = "Tipo de organización política")+theme_minimal()+
+  scale_y_continuous(labels = scales::percent)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("5_provincial_tipo.png")
+```
+
+**Porcentaje de candidaturas provinciales por tipo y región**
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+provincial_mito5_regionA=provincial%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Provincia!= "LIMA")%>%
+  dplyr::select(Region, Org_pol,Tipo_OP,Eleccion) %>%
+  group_by(Region,Eleccion, Tipo_OP)%>%
+  summarise(n=n()) %>%
+  group_by(Eleccion, Region)%>%
+  mutate(total_cand=sum(n)) %>% 
+  mutate(ratio=scales::percent(n/sum(n),accuracy = 0.1))%>% 
+  mutate(Macrozona= ifelse(Region=="AMAZONAS"|Region=="LORETO"|Region=="SAN MARTIN"|Region=="UCAYALI", "ORIENTE", ifelse(Region=="APURIMAC"|Region=="AREQUIPA"|Region=="CUSCO"|Region=="MADRE DE DIOS"|Region=="MOQUEGUA"|Region=="PUNO"|Region=="TACNA", "SUR", ifelse(Region=="CAJAMARCA"|Region=="LA LIBERTAD"|Region=="LAMBAYEQUE"|Region=="PIURA"|Region=="TUMBES", "NORTE", ifelse(Region=="CALLAO"|Region=="LIMA", "LIMA Y CALLAO", "CENTRO")))))
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+provincial_mito5_regionB=provincial%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Provincia== "LIMA")%>%
+  dplyr::select(Region, Org_pol,Tipo_OP,Eleccion) %>%
+  group_by(Region,Eleccion, Tipo_OP)%>%
+  summarise(n=n()) %>%
+  group_by(Eleccion, Region)%>%
+  mutate(total_cand=sum(n)) %>% 
+  mutate(ratio=scales::percent(n/sum(n),accuracy = 0.1)) %>% 
+  mutate(Macrozona="LIMA Y CALLAO")
+
+library(car)
+provincial_mito5_regionB$Region<-recode(provincial_mito5_regionB$Region, "'LIMA'='LIMA METROPOLITANA'")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+provincial_mito5_region=rbind(provincial_mito5_regionA, provincial_mito5_regionB)
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+provincial_mito5_region1=provincial_mito5_region %>%
+ dplyr::filter(Macrozona=="CENTRO")
+
+provincial_mito5_region2=provincial_mito5_region %>%
+ dplyr::filter(Macrozona=="LIMA Y CALLAO")
+
+provincial_mito5_region3=provincial_mito5_region %>%
+ dplyr::filter(Macrozona=="NORTE")
+
+provincial_mito5_region4=provincial_mito5_region %>%
+ dplyr::filter(Macrozona=="ORIENTE")
+
+provincial_mito5_region5=provincial_mito5_region %>%
+ dplyr::filter(Macrozona=="SUR")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = provincial_mito5_region1, aes(x = Eleccion, y= n, fill = Tipo_OP))+ 
+  geom_bar(stat="identity",position = "fill")+
+  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold", size=1.5)+
+  facet_wrap(~Region, ncol = 3)+
+  ggtitle("Porcentaje de candidaturas en Elecciones Provinciales \nsegún tipo de organización y región \nMacrozona Centro")+
+  xlab("Elección Provincial")+ 
+  ylab("Candidaturas (%)")+
+  scale_x_discrete(labels = c("Provincial 2002" = "2002","Provincial 2006" = "2006","Provincial 2010" = "2010","Provincial 2014" = "2014","Provincial 2018" = "2018","Provincial 2022" = "2022"))+
+  scale_fill_manual(values = c("#55BA77","#06E3C3","#E55555","#C18B3D", "#156C99"), labels = c("Alianza Electoral", "Lista Independiente", "Movimiento Regional", "Organización Local Provincial","Partido Político"))+
+  labs(fill = "Tipo de organización política")+theme_minimal()+
+  theme(axis.text = element_text(size=5))+
+  theme(legend.text = element_text(colour="black", size=8))+
+  theme(legend.title = element_text(color = "black", size = 8))+
+  scale_y_continuous(labels = scales::percent)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("5_provincial_regionA.png")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = provincial_mito5_region2, aes(x = Eleccion, y= n, fill = Tipo_OP))+ 
+  geom_bar(stat="identity",position = "fill")+
+  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold", size=1.5)+
+  facet_wrap(~Region, ncol = 3)+
+  ggtitle("Porcentaje de candidaturas en Elecciones Provinciales \nsegún tipo de organización y región \nMacrozona Lima y Callao")+
+  xlab("Elección Provincial")+ 
+  ylab("Candidaturas (%)")+
+  scale_x_discrete(labels = c("Provincial 2002" = "2002","Provincial 2006" = "2006","Provincial 2010" = "2010","Provincial 2014" = "2014","Provincial 2018" = "2018","Provincial 2022" = "2022"))+
+  scale_fill_manual(values = c("#55BA77","#06E3C3","#E55555","#C18B3D", "#156C99"), labels = c("Alianza Electoral", "Lista Independiente", "Movimiento Regional", "Organización Local Provincial","Partido Político"))+
+  labs(fill = "Tipo de organización política")+theme_minimal()+
+  theme(axis.text = element_text(size=5))+
+  theme(legend.text = element_text(colour="black", size=8))+
+  theme(legend.title = element_text(color = "black", size = 8))+
+  scale_y_continuous(labels = scales::percent)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("5_provincial_regionB.png")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = provincial_mito5_region3, aes(x = Eleccion, y= n, fill = Tipo_OP))+ 
+  geom_bar(stat="identity",position = "fill")+
+  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold", size=1.5)+
+  facet_wrap(~Region, ncol = 3)+
+  ggtitle("Porcentaje de candidaturas en Elecciones Provinciales \nsegún tipo de organización y región \nMacrozona Norte")+
+  xlab("Elección Provincial")+ 
+  ylab("Candidaturas (%)")+
+  scale_x_discrete(labels = c("Provincial 2002" = "2002","Provincial 2006" = "2006","Provincial 2010" = "2010","Provincial 2014" = "2014","Provincial 2018" = "2018","Provincial 2022" = "2022"))+
+  scale_fill_manual(values = c("#55BA77","#06E3C3","#E55555","#C18B3D", "#156C99"), labels = c("Alianza Electoral", "Lista Independiente", "Movimiento Regional", "Organización Local Provincial","Partido Político"))+
+  labs(fill = "Tipo de organización política")+theme_minimal()+
+  theme(axis.text = element_text(size=5))+
+  theme(legend.text = element_text(colour="black", size=8))+
+  theme(legend.title = element_text(color = "black", size = 8))+
+  scale_y_continuous(labels = scales::percent)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("5_provincial_regionC.png")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = provincial_mito5_region4, aes(x = Eleccion, y= n, fill = Tipo_OP))+ 
+  geom_bar(stat="identity",position = "fill")+
+  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold", size=1.5)+
+  facet_wrap(~Region, ncol = 2)+
+  ggtitle("Porcentaje de candidaturas en Elecciones Provinciales \nsegún tipo de organización y región \nMacrozona Oriente")+
+  xlab("Elección Provincial")+ 
+  ylab("Candidaturas (%)")+
+  scale_x_discrete(labels = c("Provincial 2002" = "2002","Provincial 2006" = "2006","Provincial 2010" = "2010","Provincial 2014" = "2014","Provincial 2018" = "2018","Provincial 2022" = "2022"))+
+  scale_fill_manual(values = c("#55BA77","#06E3C3","#E55555","#C18B3D", "#156C99"), labels = c("Alianza Electoral", "Lista Independiente", "Movimiento Regional", "Organización Local Provincial","Partido Político"))+
+  labs(fill = "Tipo de organización política")+theme_minimal()+
+  theme(axis.text = element_text(size=5))+
+  theme(legend.text = element_text(colour="black", size=8))+
+  theme(legend.title = element_text(color = "black", size = 8))+
+  scale_y_continuous(labels = scales::percent)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("5_provincial_regionD.png")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = provincial_mito5_region5, aes(x = Eleccion, y= n, fill = Tipo_OP))+ 
+  geom_bar(stat="identity",position = "fill")+
+  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold", size=1.5)+
+  facet_wrap(~Region, ncol = 3)+
+  ggtitle("Porcentaje de candidaturas en Elecciones Provinciales \nsegún tipo de organización y región \nMacrozona Sur")+
+  xlab("Elección Provincial")+ 
+  ylab("Candidaturas (%)")+
+  scale_x_discrete(labels = c("Provincial 2002" = "2002","Provincial 2006" = "2006","Provincial 2010" = "2010","Provincial 2014" = "2014","Provincial 2018" = "2018","Provincial 2022" = "2022"))+
+  scale_fill_manual(values = c("#55BA77","#06E3C3","#E55555","#C18B3D", "#156C99"), labels = c("Alianza Electoral", "Lista Independiente", "Movimiento Regional", "Organización Local Provincial","Partido Político"))+
+  labs(fill = "Tipo de organización política")+theme_minimal()+
+  theme(axis.text = element_text(size=5))+
+  theme(legend.text = element_text(colour="black", size=8))+
+  theme(legend.title = element_text(color = "black", size = 8))+
+  scale_y_continuous(labels = scales::percent)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("5_provincial_regionE.png")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+##PARA MAPA: Número de candidaturas por tipo y provincia
+
+provincial_mito5_prov=provincial%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Region,Provincia, Org_pol,Tipo_OP,Eleccion,UBIGEO) %>%
+  group_by(Region,Provincia,Eleccion, Tipo_OP,UBIGEO)%>%
+  summarise(n=n()) %>% 
+  group_by(Eleccion, Region, Provincia)%>%
+  mutate(total_org_pol = sum(n)) %>% 
+  mutate(ratio=scales::percent(n/total_org_pol,accuracy = 0.1))
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+provincial_mito5_mapa=merge(x=dcast(provincial_mito5_prov, UBIGEO + Region + Provincia + Eleccion +total_org_pol ~ Tipo_OP, value.var = "n"), y=dcast(provincial_mito5_prov, UBIGEO + Region + Provincia + Eleccion + total_org_pol ~ Tipo_OP, value.var = "ratio"), by= c("UBIGEO", "Region", "Provincia", "Eleccion", "total_org_pol"), all = TRUE)
+provincial_mito5_mapa[is.na(provincial_mito5_mapa)] = 0
+names(provincial_mito5_mapa)[6]="alianza_n"
+names(provincial_mito5_mapa)[7]="lista_n"
+names(provincial_mito5_mapa)[8]="Número de Movimientos Regionales"
+names(provincial_mito5_mapa)[9]="org_local_prov_n"
+names(provincial_mito5_mapa)[10]="Número de Partidos Nacionales"
+names(provincial_mito5_mapa)[11]="alianza_n_por"
+names(provincial_mito5_mapa)[12]="lista_n_por"
+names(provincial_mito5_mapa)[13]="mov_n_por_por"
+names(provincial_mito5_mapa)[14]="org_local_prov_n_por"
+names(provincial_mito5_mapa)[15]="par_n_por"
+
+#export(provincial_mito5_mapa,"provincial_mito5_mapa.xlsx")
+```
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+provincial_mito5_mapa=provincial_mito5_mapa %>%
+ dplyr::filter(Eleccion=="Provincial 2022")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+provincial_mito5_mapa$UBIGEO=ifelse(0<provincial_mito5_mapa$UBIGEO&provincial_mito5_mapa$UBIGEO<999,paste(0,provincial_mito5_mapa$UBIGEO, sep = ""), provincial_mito5_mapa$UBIGEO)
+```
+
+**Mapa de Tipo de Organizaciones Políticas de Elecciones Provinciales 2022**
+
+
+```{r,results='hide',echo=FALSE,warning=FALSE,message=FALSE}
+library(rgdal)
+mapprov=readOGR("PROVINCIAS.shp") 
+geoprov22=merge(mapprov,provincial_mito5_mapa,by.x="IDPROV",by.y="UBIGEO", all.x=T)
+```
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+tmap_mode("view")
+tm_shape(geoprov22) +
+  tm_polygons(
+    id="Provincia",
+    col = "Número de Movimientos Regionales",
+    breaks = c(0,3, 6, 9,Inf),
+    pal = "GnBu",
+        popup.vars=c("Número de Movimientos Regionales","Número de Partidos Nacionales"),
+   title = "Número de Movimientos Regionales 2022",
+    labels=c("0-2","3-5","6-8","De 9 a Más")
+    ) +
+  #tm_facets(by = "Eleccion", ncol = 1) +
+  tm_view(view.legend.position = c("left","bottom"))+
+  tmap_options(check.and.fix = TRUE)
+```
+
+
+## Elecciones Distritales
+
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+distrital_mito5_total=distrital%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP) %>%
+  group_by(Eleccion)%>% 
+  summarise(n=n())
+```
+
+**Número de candidaturas por tipo**
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+distrital_mito5_tipo=distrital%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Org_pol,Eleccion,Tipo_OP) %>%
+  group_by(Eleccion, Tipo_OP)%>% 
+  summarise(n=n()) %>% 
+  mutate(ratio=scales::percent(n/sum(n),accuracy = 0.1))
+
+#library(knitr)
+#library(kableExtra)
+#kable(dcast(distrital_mito3_tipo, Eleccion ~ Tipo_OP, value.var = "n"))%>%kable_styling()
+```
+
+|    **Elección**    | **Partido Político** | **Movimiento Regional** | **Alianza Electoral** | **Organización Local Provincial** | **Organización Local Distrital** | **Lista Independiente** | **Total** |
+|:-------:|:-------:|:-------:|:-------:|:-------:|:-------:|:-------:|:-------:|
+| **Distrital 2002** |         7472         |          1518           |         1218          |                 0                 |                0                 |          3012           |   13220   |
+| **Distrital 2006** |         6775         |          2748           |          803          |                543                |               291                |            0            |   11160   |
+| **Distrital 2010** |         5217         |          4946           |          799          |                180                |               278                |            0            |   11420   |
+| **Distrital 2014** |         4741         |          5987           |          504          |                148                |               156                |            0            |   11536   |
+| **Distrital 2018** |         7023         |          4540           |           0           |                18                 |                18                |            0            |   11599   |
+| **Distrital 2022** |         4774         |          4354           |           0           |                 0                 |                0                 |            0            |   9128    |
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(distrital_mito5_tipo, aes(x = Eleccion, y= n, fill = Tipo_OP)) + 
+  geom_bar(stat="identity", position = "fill")+
+  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold", size=3)+
+  ggtitle("Porcentaje de candidaturas en Elecciones Distritales \nsegún tipo de organización")+
+  xlab("Elección Distrital")+ 
+  ylab("Candidaturas (%)")+
+  scale_x_discrete(labels = c("Distrital 2002" = "2002","Distrital 2006" = "2006","Distrital 2010" = "2010","Distrital 2014" = "2014","Distrital 2018" = "2018","Distrital 2022" = "2022"))+
+  scale_fill_manual(values = c("#55BA77","#06E3C3","#E55555","#122C74", "#C18B3D", "#156C99"), labels = c("Alianza Electoral", "Lista Independiente", "Movimiento Regional", "Organización Local Distrital","Organización Local Provincial","Partido Político"))+
+  labs(fill = "Tipo de organización política")+theme_minimal()+
+  scale_y_continuous(labels = scales::percent)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("5_distrital_tipo.png")
+```
+
+**Numero de candidaturas distritales por tipo y region**
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+distrital_mito5_regionA=distrital%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Provincia!= "LIMA")%>%
+  dplyr::select(Region,Provincia,Distrito, Org_pol,Tipo_OP,Eleccion) %>%
+  group_by(Region,Eleccion, Tipo_OP)%>%
+  summarise(n=n()) %>% 
+  group_by(Eleccion, Region)%>%
+  mutate(total_cand = sum(n)) %>% 
+  mutate(ratio=scales::percent(n/total_cand,accuracy = 0.1))%>% 
+  mutate(Macrozona= ifelse(Region=="AMAZONAS"|Region=="LORETO"|Region=="SAN MARTIN"|Region=="UCAYALI", "ORIENTE", ifelse(Region=="APURIMAC"|Region=="AREQUIPA"|Region=="CUSCO"|Region=="MADRE DE DIOS"|Region=="MOQUEGUA"|Region=="PUNO"|Region=="TACNA", "SUR", ifelse(Region=="CAJAMARCA"|Region=="LA LIBERTAD"|Region=="LAMBAYEQUE"|Region=="PIURA"|Region=="TUMBES", "NORTE", ifelse(Region=="CALLAO"|Region=="LIMA", "LIMA Y CALLAO", "CENTRO")))))
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+distrital_mito5_regionB=distrital%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS" & Provincia== "LIMA")%>%
+  dplyr::select(Region,Provincia,Distrito, Org_pol,Tipo_OP,Eleccion) %>%
+  group_by(Region,Eleccion, Tipo_OP)%>%
+  summarise(n=n()) %>%
+  group_by(Eleccion, Region)%>%
+  mutate(total_cand=sum(n)) %>% 
+  mutate(ratio=scales::percent(n/sum(n),accuracy = 0.1)) %>% 
+  mutate(Macrozona="LIMA Y CALLAO")
+
+library(car)
+distrital_mito5_regionB$Region<-recode(distrital_mito5_regionB$Region, "'LIMA'='LIMA METROPOLITANA'")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+distrital_mito5_region=rbind(distrital_mito5_regionA, distrital_mito5_regionB)
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+distrital_mito5_region1=distrital_mito5_region %>%
+ dplyr::filter(Macrozona=="CENTRO")
+
+distrital_mito5_region2=distrital_mito5_region %>%
+ dplyr::filter(Macrozona=="LIMA Y CALLAO")
+
+distrital_mito5_region3=distrital_mito5_region %>%
+ dplyr::filter(Macrozona=="NORTE")
+
+distrital_mito5_region4=distrital_mito5_region %>%
+ dplyr::filter(Macrozona=="ORIENTE")
+
+distrital_mito5_region5=distrital_mito5_region %>%
+ dplyr::filter(Macrozona=="SUR")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = distrital_mito5_region1, aes(x = Eleccion, y= n, fill = Tipo_OP))+ 
+  geom_bar(stat="identity",position = "fill")+
+  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold", size=1.5)+
+  facet_wrap(~Region, ncol = 3)+
+  ggtitle("Porcentaje de candidaturas en Elecciones Distritales \nsegún tipo de organización y región \nMacrozona Centro")+
+  xlab("Elección Distrital")+ 
+  ylab("Candidaturas (%)")+
+  scale_x_discrete(labels = c("Distrital 2002" = "2002","Distrital 2006" = "2006","Distrital 2010" = "2010","Distrital 2014" = "2014","Distrital 2018" = "2018","Distrital 2022" = "2022"))+
+  scale_fill_manual(values = c("#55BA77","#06E3C3","#E55555","#122C74", "#C18B3D", "#156C99"), labels = c("Alianza Electoral", "Lista Independiente", "Movimiento Regional", "Organización Local Distrital","Organización Local Provincial","Partido Político"))+
+  labs(fill = "Tipo de organización política")+theme_minimal()+
+  theme(axis.text = element_text(size=5))+
+  theme(legend.text = element_text(colour="black", size=8))+
+  theme(legend.title = element_text(color = "black", size = 8))+
+  scale_y_continuous(labels = scales::percent)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("5_distrital_regionA.png")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = distrital_mito5_region2, aes(x = Eleccion, y= n, fill = Tipo_OP))+ 
+  geom_bar(stat="identity",position = "fill")+
+  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold", size=1.5)+
+  facet_wrap(~Region, ncol = 3)+
+  ggtitle("Porcentaje de candidaturas en Elecciones Distritales \nsegún tipo de organización y región \nMacrozona Lima y Callao")+
+  xlab("Elección Distrital")+ 
+  ylab("Candidaturas (%)")+
+  scale_x_discrete(labels = c("Distrital 2002" = "2002","Distrital 2006" = "2006","Distrital 2010" = "2010","Distrital 2014" = "2014","Distrital 2018" = "2018","Distrital 2022" = "2022"))+
+  scale_fill_manual(values = c("#55BA77","#06E3C3","#E55555","#122C74", "#C18B3D", "#156C99"), labels = c("Alianza Electoral", "Lista Independiente", "Movimiento Regional", "Organización Local Distrital","Organización Local Provincial","Partido Político"))+
+  labs(fill = "Tipo de organización política")+theme_minimal()+
+  theme(axis.text = element_text(size=5))+
+  theme(legend.text = element_text(colour="black", size=8))+
+  theme(legend.title = element_text(color = "black", size = 8))+
+  scale_y_continuous(labels = scales::percent)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("5_distrital_regionB.png")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = distrital_mito5_region3, aes(x = Eleccion, y= n, fill = Tipo_OP))+ 
+  geom_bar(stat="identity",position = "fill")+
+  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold", size=1.5)+
+  facet_wrap(~Region, ncol = 3)+
+  ggtitle("Porcentaje de candidaturas en Elecciones Distritales \nsegún tipo de organización y región \nMacrozona Norte")+
+  xlab("Elección Distrital")+ 
+  ylab("Candidaturas (%)")+
+  scale_x_discrete(labels = c("Distrital 2002" = "2002","Distrital 2006" = "2006","Distrital 2010" = "2010","Distrital 2014" = "2014","Distrital 2018" = "2018","Distrital 2022" = "2022"))+
+  scale_fill_manual(values = c("#55BA77","#06E3C3","#E55555","#122C74", "#C18B3D", "#156C99"), labels = c("Alianza Electoral", "Lista Independiente", "Movimiento Regional", "Organización Local Distrital","Organización Local Provincial","Partido Político"))+
+  labs(fill = "Tipo de organización política")+theme_minimal()+
+  theme(axis.text = element_text(size=5))+
+  theme(legend.text = element_text(colour="black", size=8))+
+  theme(legend.title = element_text(color = "black", size = 8))+
+  scale_y_continuous(labels = scales::percent)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("5_distrital_regionC.png")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = distrital_mito5_region4, aes(x = Eleccion, y= n, fill = Tipo_OP))+ 
+  geom_bar(stat="identity",position = "fill")+
+  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold", size=1.5)+
+  facet_wrap(~Region, ncol = 2)+
+  ggtitle("Porcentaje de candidaturas en Elecciones Distritales \nsegún tipo de organización y región \nMacrozona Oriente")+
+  xlab("Elección Distrital")+ 
+  ylab("Candidaturas (%)")+
+  scale_x_discrete(labels = c("Distrital 2002" = "2002","Distrital 2006" = "2006","Distrital 2010" = "2010","Distrital 2014" = "2014","Distrital 2018" = "2018","Distrital 2022" = "2022"))+
+  scale_fill_manual(values = c("#55BA77","#06E3C3","#E55555","#122C74", "#C18B3D", "#156C99"), labels = c("Alianza Electoral", "Lista Independiente", "Movimiento Regional", "Organización Local Distrital","Organización Local Provincial","Partido Político"))+
+  labs(fill = "Tipo de organización política")+theme_minimal()+
+  theme(axis.text = element_text(size=5))+
+  theme(legend.text = element_text(colour="black", size=8))+
+  theme(legend.title = element_text(color = "black", size = 8))+
+  scale_y_continuous(labels = scales::percent)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("5_distrital_regionD.png")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(data = distrital_mito5_region5, aes(x = Eleccion, y= n, fill = Tipo_OP))+ 
+  geom_bar(stat="identity",position = "fill")+
+  geom_text(aes(label=ratio),position = position_fill(vjust=0.5),color="white", fontface="bold", size=1.5)+
+  facet_wrap(~Region, ncol = 3)+
+  ggtitle("Porcentaje de candidaturas en Elecciones Distritales \nsegún tipo de organización y región \nMacrozona Sur")+
+  xlab("Elección Distrital")+ 
+  ylab("Candidaturas (%)")+
+  scale_x_discrete(labels = c("Distrital 2002" = "2002","Distrital 2006" = "2006","Distrital 2010" = "2010","Distrital 2014" = "2014","Distrital 2018" = "2018","Distrital 2022" = "2022"))+
+  scale_fill_manual(values = c("#55BA77","#06E3C3","#E55555","#122C74", "#C18B3D", "#156C99"), labels = c("Alianza Electoral", "Lista Independiente", "Movimiento Regional", "Organización Local Distrital","Organización Local Provincial","Partido Político"))+
+  labs(fill = "Tipo de organización política")+theme_minimal()+
+  theme(axis.text = element_text(size=5))+
+  theme(legend.text = element_text(colour="black", size=8))+
+  theme(legend.title = element_text(color = "black", size = 8))+
+  scale_y_continuous(labels = scales::percent)+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#ggsave("5_distrital_regionE.png")
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+##PARA MAPA: Número de candidaturas por tipo y distrito
+
+distrital_mito5_dist=distrital%>%
+  dplyr::filter(Org_pol!= "VOTOS EN BLANCO" & Org_pol!= "VOTOS NULOS")%>%
+  dplyr::select(Region,Provincia,Distrito, Org_pol,Tipo_OP,Eleccion,UBIGEO) %>%
+  group_by(Region,Provincia, Distrito, Eleccion, Tipo_OP,UBIGEO)%>%
+  summarise(n=n()) %>% 
+  group_by(Eleccion, Region, Provincia, Distrito)%>%
+  mutate(total_org_pol = sum(n)) %>% 
+  mutate(ratio=scales::percent(n/total_org_pol,accuracy = 0.1))
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+distrital_mito5_mapa=merge(x=dcast(distrital_mito5_dist, UBIGEO + Region + Provincia + Distrito + Eleccion +total_org_pol ~ Tipo_OP, value.var = "n"), y=dcast(distrital_mito5_dist, UBIGEO + Region + Provincia + Distrito+Eleccion+total_org_pol ~ Tipo_OP, value.var = "ratio"), by= c("UBIGEO", "Region", "Provincia", "Distrito", "Eleccion","total_org_pol"), all = TRUE)
+distrital_mito5_mapa[is.na(distrital_mito5_mapa)] = 0
+names(distrital_mito5_mapa)[7]="alianza_n"
+names(distrital_mito5_mapa)[8]="lista_n"
+names(distrital_mito5_mapa)[9]="Número de Movimientos Regionales"
+names(distrital_mito5_mapa)[10]="org_local_dist_n"
+names(distrital_mito5_mapa)[11]="org_local_prov_n"
+names(distrital_mito5_mapa)[12]="Número de Partidos Políticos"
+names(distrital_mito5_mapa)[13]="alianza_n_por"
+names(distrital_mito5_mapa)[14]="lista_n_por"
+names(distrital_mito5_mapa)[15]="mov_n_por_por"
+names(distrital_mito5_mapa)[16]="org_local_dist_n_por"
+names(distrital_mito5_mapa)[17]="org_local_prov_n_por"
+names(distrital_mito5_mapa)[18]="par_n_por"
+
+#export(distrital_mito5_mapa,"distrital_mito5_mapa.xlsx")
+```
+
+**Mapa de Tipo de Organizaciones Políticas de Elecciones Distritales 2022**
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+distrital_mito5_mapa=distrital_mito5_mapa %>%
+ dplyr::filter(Eleccion=="Distrital 2022")
+```
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+distrital_mito5_mapa$UBIGEO=ifelse(10000<distrital_mito5_mapa$UBIGEO&distrital_mito5_mapa$UBIGEO<100000,paste(0,distrital_mito5_mapa$UBIGEO, sep = ""), distrital_mito5_mapa$UBIGEO)
+```
+
+
+```{r,results='hide',echo=FALSE,warning=FALSE,message=FALSE}
+mapdist=readOGR("LIMITE_DISTRITAL_2020_INEI.shp") 
+geodist22=merge(mapdist,distrital_mito5_mapa,by.x="UBIGEO",by.y="UBIGEO", duplicateGeoms = TRUE)
+#geodist22=geodist22[complete.cases(geodist22@data$`% de votos no válidos`),] 
+```
+
+
+
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+tmap_mode("view")
+tm_shape(geodist22) +
+  tm_polygons(
+    id="NOMBDIST",
+    col = "Número de Movimientos Regionales",
+    breaks = c(0,3,6,Inf),
+    pal = "GnBu" ,
+    popup.vars=c("Número de Movimientos Regionales","Número de Partidos Políticos"),
+   title = ("Número de Movimientos Regionales 2022"),
+    colorNA = "white",
+    textNA = "Distrito capital sin eleccións",
+    title = "Número de Movimientos Regionale",
+    labels=c("0-2","3-5","6-8","De 9 a más")
+    ) +
+  #tm_facets(by = "Eleccion", ncol = 1)+
+  tm_view(view.legend.position = c("left","bottom"))
+```
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+rm(list=ls())
+```
