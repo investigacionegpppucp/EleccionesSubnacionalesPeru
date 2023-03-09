@@ -1,2 +1,0 @@
-"0","regional_mito3_mapa_a$UBIGEO=ifelse(0<regional_mito3_mapa_a$UBIGEO&regional_mito3_mapa_a$UBIGEO<10,paste(0,regional_mito3_mapa_a$UBIGEO, sep = """"), regional_mito3_mapa_a$UBIGEO)"
-"0",""

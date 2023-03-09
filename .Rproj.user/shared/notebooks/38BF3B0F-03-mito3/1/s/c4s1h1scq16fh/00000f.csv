@@ -1,1 +1,0 @@
-"0","provincial_mito3_mapa_a$UBIGEO=ifelse(0<provincial_mito3_mapa_a$UBIGEO&provincial_mito3_mapa_a$UBIGEO<999,paste(0,provincial_mito3_mapa_a$UBIGEO, sep = """"), provincial_mito3_mapa_a$UBIGEO)"

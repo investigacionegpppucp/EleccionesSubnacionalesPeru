@@ -1,2 +1,0 @@
-"0","org_total=rbind(reg, prov, dist) "
-"0","org_total$Eleccion=as.factor(org_total$Eleccion)"

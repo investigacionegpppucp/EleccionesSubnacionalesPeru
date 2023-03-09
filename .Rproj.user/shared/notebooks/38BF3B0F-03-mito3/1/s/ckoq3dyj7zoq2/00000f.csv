@@ -1,5 +1,0 @@
-"0","library(raster)"
-"0","per_r=getData(""GADM"", country= ""PER"", level=1)"
-"0","per_r=subset(per_r, NAME_1!=""Lima Province"" )"
-"0","georeg22=merge(per_r,regional_mito3_mapa_a,by.x=""CC_1"",by.y=""UBIGEO"", duplicateGeoms = TRUE)"
-"0",""

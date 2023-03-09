@@ -1,2 +1,0 @@
-"0","distrital_mito1$UBIGEO=ifelse(9999<distrital_mito1$UBIGEO&distrital_mito1$UBIGEO<100000,paste(0,distrital_mito1$UBIGEO, sep = """"), distrital_mito1$UBIGEO)"
-"0",""

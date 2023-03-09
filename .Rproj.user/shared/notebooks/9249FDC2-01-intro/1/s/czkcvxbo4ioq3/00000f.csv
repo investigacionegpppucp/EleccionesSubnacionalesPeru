@@ -1,4 +1,0 @@
-"0","distrital_mito1 =distrital%>% "
-"0","  filter(Eleccion==""Distrital 2022"")%>%"
-"0","  dplyr::select(Region,Provincia,Distrito, UBIGEO,V_emitidos,V_validos,Electores,Eleccion)%>%"
-"0","  unique()"
