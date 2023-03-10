@@ -13,7 +13,6 @@ library(stringr)
 library(ggplot2)
 ```
 
-## Mito 4: Organizaciones políticas ganadoras
 
 ### Elecciones regionales
 
