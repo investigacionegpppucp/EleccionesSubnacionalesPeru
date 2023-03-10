@@ -484,6 +484,7 @@ tm_shape(geodist22) +
 rm(list=ls())
 ```
 
+
 <!--chapter:end:01-participación-electoral.Rmd-->
 
 # El voto no válido 
