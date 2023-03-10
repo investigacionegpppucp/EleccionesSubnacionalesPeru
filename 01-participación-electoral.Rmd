@@ -402,7 +402,7 @@ tm_shape(geoprov22) +
 
 <font size="5"> **Mapa de la Participación Electoral 2022 a nivel distrital**</font>
 
-```{r}
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
 rm(list=ls())
 ```
 
@@ -413,14 +413,14 @@ library(googlesheets4)
 distrital=read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQMLHdXuz-ykbp9VmJJGhtl0vdNeeMxjgod2YrYLt9UB3RdX8tb-LEbZr2PVV41Sj384LuK1quysfNj/pub?gid=30541803&single=true&output=csv",dec=".")
 ```
 
-```{r}
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
 distrital_mito1 =distrital%>% 
   filter(Eleccion=="Distrital 2022")%>%
   dplyr::select(Region,Provincia,Distrito, UBIGEO,V_emitidos,V_validos,Electores,Eleccion)%>%
   unique()
 ```
 
-```{r}
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
 distrital_mito1$'% de participación electoral'=round(distrital_mito1$V_emitidos/distrital_mito1$Electores*100,1)
 ```
 
